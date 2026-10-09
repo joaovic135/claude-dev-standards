@@ -1,0 +1,42 @@
+---
+description: Contrato do projeto — invariantes, fronteiras e convenções que valem para todo arquivo
+globs: **/*.{ts,tsx,js,mjs,sql}
+alwaysApply: true
+---
+
+# Contrato do projeto
+
+Resumo do `CLAUDE.md`. Em caso de conflito, o `CLAUDE.md` manda; mantenha os dois em sincronia.
+
+## Invariantes (não se negocia num PR)
+
+- Tabela com dado de outro usuário tem autorização no banco (RLS) por padrão, não filtro na query.
+- Credencial privilegiada só no servidor. Variável pública de build é pública.
+- Autorização é no banco; esconder botão é cortesia. Regra de acesso não trivial tem teste do ator **não** autorizado.
+- Transição de estado é rejeitada onde o estado mora, não só onde a tela chama.
+- Valor do sistema de registro não é recalculado no cliente.
+- Timestamp vem do servidor, nunca do relógio do aparelho.
+- Nenhuma cor nem `fontSize` literal fora da pasta de tema: adicione o token antes.
+- Migração aplicada não se edita; corrige-se com uma nova.
+
+## Fronteiras
+
+`lib/theme/constants/types` ← `data`, `features/*/utils` ← `features/*/services`, `contexts` ← `app`, `components`.
+Feature não importa de feature. `utils` é lógica pura. Tela não chama o cliente do banco.
+
+## Convenções
+
+- Produto no idioma do usuário; identificadores em inglês ou no termo de domínio já usado.
+- Nenhum comentário no código. O porquê vai na mensagem de commit.
+- Tipagem estrita; `any`, `!` e cast sem checagem exigem justificativa no commit.
+- Um único módulo traduz erro de infra para o que o app entende.
+- SDK nativo entra por shim em `lib`; erro capturado passa pela porta única de monitoramento.
+- Texto legal tem versão e hash; o banco só aceita versão cadastrada.
+
+## Ao adotar um padrão novo
+
+Registre no mesmo commit: o que fazer, o problema que evita, onde é imposto, um arquivo de exemplo. Aplique ao código existente.
+
+## Commits
+
+Conventional Commits (`feat:`/`fix:` geram versão; `chore:`/`docs:`/`test:`/`ci:` não). Sem coautoria de agente.

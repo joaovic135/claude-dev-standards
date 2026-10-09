@@ -1,0 +1,84 @@
+---
+description: Estrutura obrigatória de arquivos e pastas para rotas dentro de src/app/(app)/**
+globs: src/app/(app)/**/*.{ts,tsx},src/features/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Estrutura de Arquivos em `src/app/(app)/**`
+
+Toda rota (tela) dentro de `src/app/(app)/` deve ser um arquivo de rota puro. Componentes, hooks e utils auxiliares vivem em `src/features/<nome-da-rota>/`, **fora** de `src/app/`.
+
+```
+src/app/(app)/
+  nome-da-rota/
+    index.tsx          ← única rota real — orquestra UI, sem lógica inline
+
+src/features/
+  nome-da-rota/        ← arquivos não-rota colocalizados por feature
+    components/
+      OutroComponente.tsx
+    hooks/
+      useNomeDoHook.ts
+    utils/
+      helpers.ts
+```
+
+## Por que fora de `src/app/`?
+
+O Expo Router trata **todo arquivo dentro de `src/app/` como rota**, inclusive aqueles sem `export default`. No servidor de desenvolvimento (`expo start`) o Metro descarta os arquivos sem `export default` e as abas extras não aparecem. Mas no `expo export -p web` (Vercel) **todos** os arquivos são materializados como telas, gerando abas fantasmas para cada componente/hook/util encontrado dentro da pasta da rota.
+
+A única solução definitiva é manter `src/app/` exclusivamente para arquivos de rota.
+
+## Regras
+
+- `index.tsx` é o único arquivo de rota dentro da pasta. Orquestra sub-componentes, consome hooks e define o layout. Não contém lógica de negócio inline.
+- Todos os arquivos que **não são rota** (componentes, hooks, utils) ficam em `src/features/<nome-da-rota>/`.
+- `src/features/<rota>/components/` contém sub-componentes de contexto local.
+- `src/features/<rota>/hooks/` só é criado quando há lógica extraída que justifique um custom hook.
+- `src/features/<rota>/utils/` contém funções puras (formatação, cálculos de data etc.).
+- Se um componente for reutilizado em outra rota, mova-o para `src/components/`.
+- Não crie a estrutura de pasta para telas simples — é proporcional à complexidade.
+- Imports nos `index.tsx` usam o alias `@/features/<rota>/...`.
+
+## Exemplo Correto
+
+```
+src/app/(app)/
+  pedidos/
+    index.tsx                         ← importa de @/features/pedidos/...
+  agenda/
+    index.tsx                         ← importa de @/features/agenda/...
+
+src/features/
+  pedidos/
+    components/
+      PedidoCard.tsx
+    hooks/
+      usePedidos.ts
+    utils/
+      format.ts
+  agenda/
+    components/
+      WeekSelector.tsx
+      TimelineRow.tsx
+    hooks/
+      useAgenda.ts
+    utils/
+      week.ts
+```
+
+```tsx
+// src/app/(app)/(tabs)/pedidos/index.tsx
+import { usePedidos } from '@/features/pedidos/hooks/usePedidos';
+import { PedidoCard } from '@/features/pedidos/components/PedidoCard';
+```
+
+## Configuração do `_layout.tsx`
+
+Com os arquivos auxiliares fora de `src/app/`, o `name` da tab é simplesmente o nome da pasta sem subformo:
+
+```tsx
+// src/app/(app)/(tabs)/_layout.tsx
+<Tabs.Screen name="pedidos" options={{ title: "Pedidos" }} />
+<Tabs.Screen name="agenda"    options={{ title: "Agenda" }} />
+```

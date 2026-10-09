@@ -1,0 +1,33 @@
+\chapter*{Natureza e controle deste documento}
+\addcontentsline{toc}{chapter}{Natureza e controle deste documento}
+
+\section*{O que este documento é}
+
+Este volume descreve como o \NomeDoProduto\ foi construído e verificado: a arquitetura, as regras de codificação que o projeto impõe, o processo de trabalho, o uso de inteligência artificial no desenvolvimento, o catálogo de testes automatizados, os resultados do plano de testes e as avaliações de experiência de uso. É um documento interno de engenharia e, ao mesmo tempo, um guia: cada capítulo diz o que foi feito, por que, como foi aplicado neste projeto, qual a evidência e que lição ficou.
+
+Os números citados vêm do repositório, dos registros de execução dos testes e do histórico do controle de versão, sem arredondamento. O que não foi executado está dito como não executado.
+
+\section*{Controle do documento}
+
+\begin{table}[H]
+\tabelapequena
+\begin{tabularx}{\textwidth}{L{4.1cm}Y}
+\toprule
+\linhacab \cab{Item} & \cab{Informação}\\
+\midrule
+Versão e data & Versão 1.0, de \DataBase\\
+Elaboração & \NomeDoAutor, \CargoDoAutor\\
+Destinatários & \NomeDoDestinatario\\
+Classificação & Uso interno\\
+Base de código & Repositório \cod{nome-do-repositorio}, revisão \cod{abc1234}, de DATA\\
+Período dos testes & DATA-INICIAL a DATA-FINAL\\
+Documento relacionado & Volume~I, \textit{Tratamento de Dados Pessoais no \NomeDoProduto}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Como ler}
+
+A Parte~I explica o produto por dentro; a Parte~II, como o trabalho é feito; a Parte~III, os testes e o que provaram; a Parte~IV, as avaliações de uso. O Capítulo~\ref{cap:guia} reúne as práticas em forma de guia, com uma lista de verificação para começar um projeto novo. Os nomes completos de todos os testes estão no Anexo~\ref{anexo:testes}.
+
+Duas caixas aparecem ao longo do texto: \enquote{Como aplicar} descreve uma prática de forma reutilizável, e \enquote{Lição aprendida} registra o que este projeto aprendeu ao aplicá-la ou ao deixar de aplicá-la.

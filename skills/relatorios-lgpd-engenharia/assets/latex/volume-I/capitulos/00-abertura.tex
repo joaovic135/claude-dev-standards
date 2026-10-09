@@ -1,0 +1,53 @@
+\chapter*{Natureza e controle deste documento}
+\addcontentsline{toc}{chapter}{Natureza e controle deste documento}
+
+\section*{O que este documento é}
+
+Este relatório é um documento técnico. Foi elaborado por QUEM-ELABOROU (a área de engenharia da própria empresa, o desenvolvedor contratado ou o fornecedor do sistema), a pedido da Empresa Exemplo Ltda., inscrita no CNPJ 00.000.000/0001-00, que opera sob a marca Marca Exemplo, para subsidiar consultoria jurídica sobre a conformidade do \NomeDoProduto\ à Lei nº~13.709, de 14 de agosto de 2018, a Lei Geral de Proteção de Dados Pessoais (LGPD). Quem é controlador e quem é operador de cada tratamento é tratado como hipótese no Capítulo~\ref{cap:sistema}.
+
+O relatório descreve fatos: quais dados pessoais o sistema trata, onde ficam, para quem vão, por quanto tempo permanecem, como são protegidos e o que o titular é informado. Cada fato vem acompanhado da evidência que o sustenta, de modo que possa ser conferido por terceiro.
+
+A análise foi feita entre DATA-INICIAL e DATA-FINAL. O Capítulo~\ref{cap:achados} reúne os achados em fichas e o Capítulo~\ref{cap:plano} propõe a ordem das correções.
+
+O relatório não emite opinião jurídica. Onde um fato parece tocar um dispositivo legal, o texto indica o dispositivo como \enquote{possivelmente relacionado} e deixa a qualificação ao consultor. As questões que dependem de interpretação estão reunidas, como quesitos, no Capítulo~\ref{cap:quesitos}.
+
+\section*{O que este documento não é}
+
+Não é parecer, auditoria jurídica nem certificação de conformidade. Não examina contratos com fornecedores, políticas internas nem rotinas de pessoas, que não fazem parte do código-fonte analisado. O que só a administração pode informar está listado no Anexo~\ref{anexo:administracao}.
+
+\section*{Confidencialidade}
+
+Este documento descreve fragilidades de segurança ainda não corrigidas e detalhes de arquitetura cuja divulgação facilitaria um ataque. Sua circulação deve ficar restrita à administração da empresa e aos advogados por ela indicados. Não contém senha, chave de acesso nem dado pessoal de usuário real: os exemplos e as telas reproduzidas usam dados fictícios, e os números de produção foram obtidos por contagens e metadados, sem leitura de registros individuais.
+
+\section*{Controle do documento}
+
+\begin{table}[H]
+\tabelapequena
+\begin{tabularx}{\textwidth}{L{4.1cm}Y}
+\toprule
+\linhacab \cab{Item} & \cab{Informação}\\
+\midrule
+Versão e data & Versão 1.0, de \DataBase\\
+Elaboração & \NomeDoAutor, \CargoDoAutor\\
+Destinatários & \NomeDoDestinatario\\
+Classificação & Confidencial; circulação restrita\\
+Objeto examinado & \NomeDoProduto\ (plataformas), servidor e banco de dados\\
+Base de código & Repositório \cod{nome-do-repositorio}, revisão \cod{abc1234}, de DATA\\
+Ambientes consultados & Produção, apenas por metadados e contagens; homologação, para testes e leitura de conteúdo de exemplo\\
+Período dos testes & DATA-INICIAL a DATA-FINAL\\
+Documento relacionado & Volume~II, \textit{Engenharia, Qualidade e Testes do \NomeDoProduto}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Como ler}
+
+O Capítulo~\ref{cap:sumario} resume as conclusões e basta para uma primeira leitura. Os capítulos temáticos apresentam os fatos por assunto. O Capítulo~\ref{cap:achados} reúne todos os achados em fichas numeradas, da maior para a menor gravidade. O Capítulo~\ref{cap:quesitos} formula as perguntas ao consultor e o Capítulo~\ref{cap:plano} propõe a ordem das correções.
+
+Três convenções valem para todo o texto.
+
+\begin{itemize}
+  \item \textbf{Gravidade} é uma medida técnica do risco, não uma qualificação jurídica. Os níveis são \gravidade{critica}, \gravidade{alta}, \gravidade{media}, \gravidade{baixa} e \gravidade{informativa}, definidos no Capítulo~\ref{cap:metodo}.
+  \item \textbf{Situação} de um tema: \situacaotexto{atende}, \situacaotexto{parcial}, \situacaotexto{naoatende}, \situacaotexto{externo} ou \situacaotexto{na}. \enquote{Atende} significa que há evidência técnica do comportamento esperado, não que a exigência legal esteja juridicamente satisfeita.
+  \item \textbf{Evidência} é indicada pelo caminho do arquivo e pela linha no repositório, como em \arq{src/services/termos.ts:42}, pelo identificador do teste registrado, ou pela consulta feita ao banco e seu resultado.
+\end{itemize}

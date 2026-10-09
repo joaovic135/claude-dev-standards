@@ -1,0 +1,45 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[helvratio=0.9]{newpxtext}
+\usepackage{newpxmath}
+\usepackage[scaled=0.94]{inconsolata}
+\usepackage{fontawesome5}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,shapes.misc,decorations.pathreplacing}
+\definecolor{corprimaria}{HTML}{2C7A73}
+\definecolor{corprimariaescura}{HTML}{1F5C56}
+\definecolor{cortinta}{HTML}{17252D}
+\definecolor{corcinza}{HTML}{5C6870}
+\definecolor{corsuave}{HTML}{9AA5AC}
+\definecolor{cortom}{HTML}{EDF4F3}
+\definecolor{corpapel}{HTML}{F7F9F9}
+\definecolor{sevcritica}{HTML}{8E1B1B}
+\definecolor{sevalta}{HTML}{BF4E15}
+\definecolor{sevmedia}{HTML}{A8790A}
+\definecolor{sevbaixa}{HTML}{3A6B8A}
+\definecolor{sevinformativa}{HTML}{6B7280}
+\definecolor{sitatende}{HTML}{2E7D4F}
+\tikzset{
+  every picture/.style={font=\sffamily\footnotesize,text=cortinta},
+  caixa/.style={draw=corsuave,line width=0.5pt,rounded corners=2pt,fill=white,inner sep=6pt,align=center},
+  caixaforte/.style={caixa,draw=corprimaria,line width=0.9pt,fill=cortom},
+  seta/.style={-{Stealth[length=5pt,width=4pt]},line width=0.6pt,draw=corcinza},
+  setaforte/.style={seta,draw=corprimaria,line width=0.9pt},
+  rotulo/.style={font=\sffamily\scriptsize,text=corcinza,align=center,inner sep=1.5pt},
+  titulo/.style={font=\sffamily\bfseries\footnotesize,text=corprimaria},
+}
+\pgfplotsset{
+  relatorio/.style={
+    width=13.5cm,height=6.6cm,
+    axis lines*=left,axis line style={draw=corsuave},
+    tick style={draw=corsuave},tick label style={font=\sffamily\footnotesize,text=corcinza},
+    label style={font=\sffamily\footnotesize,text=corcinza},
+    ymajorgrids,grid style={draw=corsuave!35,line width=0.3pt},
+    legend style={draw=none,fill=none,font=\sffamily\footnotesize,legend cell align=left},
+    every node near coord/.append style={font=\sffamily\scriptsize\bfseries,text=cortinta},
+    /pgf/number format/.cd,use comma,1000 sep={.},assume math mode=true,
+  },
+}

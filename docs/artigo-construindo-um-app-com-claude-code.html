@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Construindo um app multiplataforma com Claude Code</title>
+<style>
+  @page { size: A4; margin: 22mm 20mm 24mm 20mm; }
+  :root {
+    --tinta: #1d2523; --suave: #5c6a67; --linha: #d8dfdd; --marca: #2f8f8a; --marca-escura: #1f6e6a;
+    --marca-fundo: #e8f5f3; --aviso-fundo: #fff7e6; --aviso-borda: #e6c27a; --codigo-fundo: #f3f5f4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif; font-size: 10.6pt; line-height: 1.52; color: var(--tinta); }
+  h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; page-break-after: avoid; break-after: avoid; }
+  h1 { font-size: 26pt; margin: 0 0 6pt; }
+  h2 { font-size: 16.5pt; margin: 26pt 0 8pt; padding-bottom: 4pt; border-bottom: 1.5pt solid var(--marca); color: var(--marca-escura); }
+  h3 { font-size: 12.5pt; margin: 16pt 0 5pt; color: var(--tinta); }
+  h4 { font-size: 10.8pt; margin: 12pt 0 3pt; color: var(--marca-escura); text-transform: uppercase; letter-spacing: .06em; }
+  p { margin: 0 0 7pt; text-align: left; orphans: 3; widows: 3; }
+  ul, ol { margin: 0 0 8pt 0; padding-left: 18pt; }
+  li { margin-bottom: 2.5pt; }
+  li > ul, li > ol { margin-top: 2pt; }
+  code { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 9.3pt; background: var(--codigo-fundo); padding: 0 3pt; border-radius: 3pt; }
+  pre { font-family: Consolas, "Cascadia Mono", "Courier New", monospace; font-size: 8.9pt; line-height: 1.4; background: var(--codigo-fundo); border: 1pt solid var(--linha); border-left: 3pt solid var(--marca); padding: 8pt 10pt; margin: 6pt 0 10pt; white-space: pre-wrap; overflow-wrap: anywhere; page-break-inside: avoid; break-inside: avoid; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 12pt; font-size: 9.6pt; page-break-inside: auto; }
+  th, td { border: 1pt solid var(--linha); padding: 4.5pt 6pt; vertical-align: top; text-align: left; }
+  th { background: var(--marca-fundo); color: var(--marca-escura); font-weight: 700; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  .capa { padding-top: 60mm; height: 240mm; page-break-after: always; break-after: page; }
+  .capa .rotulo { font-family: Consolas, monospace; font-size: 9.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--marca-escura); margin-bottom: 14pt; }
+  .capa h1 { font-size: 30pt; max-width: 150mm; }
+  .capa .sub { font-size: 13.5pt; color: var(--suave); max-width: 150mm; margin-top: 10pt; line-height: 1.4; }
+  .capa .meta { margin-top: 44pt; font-size: 10pt; color: var(--suave); border-top: 1pt solid var(--linha); padding-top: 10pt; max-width: 150mm; }
+  .sumario { page-break-after: always; break-after: page; }
+  .sumario ol { list-style: none; padding-left: 0; counter-reset: sec; }
+  .sumario li { counter-increment: sec; margin-bottom: 4pt; padding-left: 26pt; text-indent: -26pt; }
+  .sumario li::before { content: counter(sec) ". "; display: inline-block; width: 26pt; text-indent: 0; color: var(--marca-escura); font-weight: 700; }
+  .caixa { border: 1pt solid var(--linha); border-left: 3pt solid var(--marca); background: var(--marca-fundo); padding: 8pt 11pt; margin: 8pt 0 12pt; page-break-inside: avoid; break-inside: avoid; }
+  .caixa .titulo { font-weight: 700; color: var(--marca-escura); margin-bottom: 3pt; font-size: 10pt; text-transform: uppercase; letter-spacing: .05em; }
+  .caixa p:last-child { margin-bottom: 0; }
+  .licao { border: 1pt solid var(--aviso-borda); border-left: 3pt solid #c9962b; background: var(--aviso-fundo); padding: 8pt 11pt; margin: 8pt 0 12pt; page-break-inside: avoid; break-inside: avoid; }
+  .licao .titulo { font-weight: 700; color: #8a6414; margin-bottom: 3pt; font-size: 10pt; text-transform: uppercase; letter-spacing: .05em; }
+  .licao p:last-child { margin-bottom: 0; }
+  .camadas { margin: 8pt 0 12pt; page-break-inside: avoid; break-inside: avoid; }
+  .camada { border: 1pt solid var(--linha); border-radius: 6pt; padding: 7pt 10pt; margin: 0 auto 4pt; max-width: 150mm; background: #fff; }
+  .camada .nome { font-family: Consolas, monospace; font-size: 9.3pt; color: var(--marca-escura); font-weight: 700; }
+  .camada .papel { font-size: 9.6pt; color: var(--suave); }
+  .seta { text-align: center; color: var(--marca); font-size: 12pt; line-height: 1; margin: 0 0 4pt; }
+  .legenda { font-size: 9pt; color: var(--suave); text-align: center; margin-top: 2pt; }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+  .nota-fim { font-size: 9.3pt; color: var(--suave); border-top: 1pt solid var(--linha); padding-top: 8pt; margin-top: 20pt; }
+  .quebra { page-break-before: always; break-before: page; }
+  strong { font-weight: 700; }
+  a { color: var(--marca-escura); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<section class="capa">
+  <div class="rotulo">Engenharia · desenvolvimento assistido por agentes</div>
+  <h1>Construindo um app multiplataforma com Claude Code</h1>
+  <div class="sub">Regras de projeto, agentes especializados, decisões de arquitetura, testes, release automatizado, MCPs, comunicação entre agentes e uma skill de relatórios — o que funcionou, o que quebrou e o que ficou registrado.</div>
+  <div class="meta">
+    Estudo de caso de um app Expo (iOS, Android e web) com Supabase, integrado a um sistema de gestão externo.<br>
+    Outubro de 2026. Documento público: sem dados de cliente, sem regras de negócio, sem credenciais.
+  </div>
+</section>
+
+<section class="sumario">
+  <h2>Sumário</h2>
+  <ol>
+    <li>Por que este artigo existe</li>
+    <li>O projeto em uma página</li>
+    <li>O CLAUDE.md como contrato do projeto</li>
+    <li>Invariantes: o que é caro demais para errar</li>
+    <li>Fronteiras e direção de dependência</li>
+    <li>Regras de código e como elas são impostas</li>
+    <li>Registrando um padrão novo</li>
+    <li>Como as decisões de arquitetura são tomadas</li>
+    <li>Testes: onde errar é caro</li>
+    <li>CI, versionamento e release</li>
+    <li>Claude Code no projeto: agentes, hooks, memória e disciplina de contexto</li>
+    <li>Servidores MCP</li>
+    <li>papo: quando dois Claudes precisam combinar um contrato</li>
+    <li>A skill de relatórios de proteção de dados e engenharia</li>
+    <li>Lições aprendidas</li>
+    <li>O que levar deste caso</li>
+  </ol>
+</section>
+
+<h2>1. Por que este artigo existe</h2>
+<p>Este documento descreve como um app móvel e web foi construído e mantido por um time pequeno com o Claude Code como par de programação permanente. Não é um tutorial de Expo nem um manual do Claude Code: é o registro das <strong>regras</strong> que o projeto adotou, do <strong>porquê</strong> de cada uma e de como elas são <strong>impostas</strong> por lint, tipo, teste ou CI em vez de depender de memória.</p>
+<p>A tese central é simples: um agente de código é tão bom quanto o contrato que ele recebe. Quando o repositório diz, em um lugar só, o que é invariante, onde cada coisa mora e como se verifica que está certo, o agente produz código que parece ter sido escrito por quem já conhece o projeto. Quando isso não existe, cada sessão reinventa uma convenção.</p>
+<p>Tudo aqui foi anonimizado. O domínio é descrito de forma genérica, e nenhum identificador de ambiente, credencial ou regra de negócio aparece no texto.</p>
+
+<h2>2. O projeto em uma página</h2>
+<p>O produto é um aplicativo para profissionais autônomos de um setor regulado. Ele é a ponta móvel de um sistema de gestão já existente (chamado aqui de <strong>ERP</strong>), que continua sendo a fonte de verdade do domínio. O app autentica usuários, mostra o que o ERP envia, recebe respostas, guarda documentos de cadastro e oferece um chat com IA que lê documentos do processo e responde com citação de página.</p>
+<table>
+  <tr><th style="width:30%">Camada</th><th>Escolha</th></tr>
+  <tr><td>Cliente</td><td>Expo SDK 54, React Native, Expo Router (rotas tipadas), React Compiler ligado, TypeScript estrito. Um código para iOS, Android e web.</td></tr>
+  <tr><td>Backend</td><td>Supabase: Postgres com RLS, Auth, Storage, Edge Functions em Deno e Vault para segredos de gatilhos.</td></tr>
+  <tr><td>Integração</td><td>ERP externo por API autenticada e webhooks de eventos, com contrato documentado no repositório.</td></tr>
+  <tr><td>Observabilidade</td><td>Análise de produto e captura de erros por uma porta única; crash reporting nativo.</td></tr>
+  <tr><td>Suporte</td><td>Chat de suporte embutido por SDK nativo, atrás de um shim.</td></tr>
+  <tr><td>Entrega</td><td>Web em hospedagem estática; apps por EAS Build com envio automático às lojas; CI no GitHub Actions.</td></tr>
+  <tr><td>Ambientes</td><td>Dois projetos de backend (homologação e produção) e perfis de build correspondentes.</td></tr>
+  <tr><td>Time</td><td>Um desenvolvedor responsável pelo app, Claude Code como par permanente, e um time separado cuidando do ERP.</td></tr>
+</table>
+
+<h2>3. O CLAUDE.md como contrato do projeto</h2>
+<p>O <code>CLAUDE.md</code> na raiz do repositório é lido pelo agente em toda sessão. No início era uma lista de comandos; virou o documento mais importante do projeto. Ele tem nove partes, sempre nesta ordem:</p>
+<ol>
+  <li><strong>Mapa de documentos.</strong> Uma linha por documento especializado (regras de plataforma, contrato do ERP, privacidade, backlog, plano de testes, release). O CLAUDE.md aponta; não repete.</li>
+  <li><strong>Comandos</strong> e, logo abaixo, a <strong>automação que já existe</strong>, para o agente não duplicar: formatação roda sozinha por hook; tipos do banco são gerados; o portão de verificação roda uma vez, no fim.</li>
+  <li><strong>Invariantes</strong>: o que é caro demais para errar (seção 4).</li>
+  <li><strong>Como registrar um padrão novo</strong> (seção 7).</li>
+  <li><strong>Fronteiras</strong>: direção de dependência entre pastas (seção 5).</li>
+  <li><strong>Convenções</strong>: idioma, comentários, tipagem, tradução de erro, shims, monitoramento, textos legais.</li>
+  <li><strong>Testes</strong>: quando escrever e quando não escrever.</li>
+  <li><strong>Armadilhas que o projeto já aprendeu</strong>: cada uma custou pelo menos uma sessão.</li>
+  <li><strong>Desenho</strong> e <strong>disciplina de contexto</strong>: como decidir onde uma capacidade mora e como gastar tokens.</li>
+</ol>
+<div class="caixa">
+  <div class="titulo">Princípio</div>
+  <p>Cada regra no CLAUDE.md responde a três perguntas: o que fazer, qual problema evita e onde é imposta. Uma regra sem o "onde é imposta" é um pedido; com ele, é um contrato. Quando a imposição é só "convenção, sem imposição", o texto diz isso explicitamente.</p>
+</div>
+<p>Dois cuidados mantêm o arquivo útil: ele não repete o que o código ou o git já dizem (estrutura de pastas, histórico de correções), e ele é atualizado no <em>mesmo commit</em> em que um padrão muda. Registro velho é pior que registro nenhum, porque o agente confia nele.</p>
+
+<h2>4. Invariantes: o que é caro demais para errar</h2>
+<p>Há bugs que se consertam no próximo PR e bugs cujo dano já aconteceu quando se descobre: vazamento de dado de outro usuário, demanda perdida, prazo calculado errado. Para esses, "a gente arruma depois" não vale. O projeto lista nove invariantes:</p>
+<ol>
+  <li><strong>Toda tabela com dado de outro usuário tem RLS por padrão.</strong> Autorização não é "lembrar de filtrar por <code>user_id</code> na query". Uma tabela nova sem policy é bug de segurança mesmo sem tela que a leia.</li>
+  <li><strong>Credencial privilegiada vive só em Edge Function.</strong> Qualquer variável <code>EXPO_PUBLIC_*</code> entra no bundle e é pública, inclusive na web, onde a saída é servida estática. Se um segredo precisou virar pública, o desenho está errado. Gatilhos e crons do banco que chamam funções leem URL e segredo do Vault, nunca de literal no DDL, porque a definição do gatilho aparece em todo dump e no painel.</li>
+  <li><strong>Autorização é no Postgres, não na tela.</strong> Esconder um botão é cortesia; o portão é a policy. Toda regra com caso não trivial (dono, estado, papel) precisa de teste do ator <em>não</em> autorizado.</li>
+  <li><strong>A entidade central do domínio tem ciclo de vida explícito.</strong> Transições inválidas são rejeitadas onde o estado mora, não só onde a tela chama. Há uma rota única de resposta para o sistema externo.</li>
+  <li><strong>Valor monetário é dado do sistema externo, não conta do app.</strong> O cliente formata; nunca recalcula, arredonda ou infere.</li>
+  <li><strong>Timestamp vem do servidor, nunca do relógio do aparelho.</strong> Prazo medido com hora local é prazo errado.</li>
+  <li><strong>Nenhuma cor nem <code>fontSize</code> literal</strong> nas pastas de telas, componentes e features. Falta um token? Adiciona-se o token antes, não uma exceção depois.</li>
+  <li><strong>Migração aplicada não se edita.</strong> Corrige-se com uma nova.</li>
+  <li><strong>Action de CI presa a tag mutável é buraco de supply chain.</strong> Pinar por SHA e dar ao workflow o mínimo de <code>permissions:</code>.</li>
+</ol>
+<p>Repare que seis das nove têm imposição mecânica (RLS no banco, lint para tokens, teste para texto legal, CI para audit) e três são convenção reforçada por revisão de agente especializado (seção 11).</p>
+
+<h2>5. Fronteiras e direção de dependência</h2>
+<p>A estrutura de pastas segue uma direção de dependência do mais estável para o mais volátil. Uma camada só importa das que estão abaixo dela.</p>
+<div class="camadas">
+  <div class="camada"><div class="nome">src/app/** · src/components/**</div><div class="papel">Telas e UI: apresentação, navegação, estado local</div></div>
+  <div class="seta">▲</div>
+  <div class="camada"><div class="nome">src/features/*/services · src/contexts</div><div class="papel">Os únicos que falam com o backend e com o ERP</div></div>
+  <div class="seta">▲</div>
+  <div class="camada"><div class="nome">src/data · src/features/*/utils</div><div class="papel">Lógica pura, testável sem rede nem storage</div></div>
+  <div class="seta">▲</div>
+  <div class="camada"><div class="nome">src/lib · src/theme · src/constants · src/types</div><div class="papel">Não conhecem features nem telas</div></div>
+  <div class="legenda">Direção de dependência: cada camada só importa das que estão abaixo.</div>
+</div>
+<ul>
+  <li>Uma feature não importa de outra feature. O que duas precisam sobe para <code>src/lib</code>, <code>src/components/ui</code> ou <code>src/data</code>.</li>
+  <li><code>features/*/utils</code> é lógica pura: sem cliente de banco, sem <code>fetch</code>, sem React. É o recorte que está sob cobertura de teste.</li>
+  <li>Tela não chama o cliente do banco direto; só <code>services</code> e <code>contexts</code> fazem isso.</li>
+  <li>Um <code>eslint-disable</code> numa regra de fronteira significa que a fronteira está errada, não que a exceção está ok.</li>
+</ul>
+<p>A regra de "feature não importa de feature" está no ESLint como <code>no-restricted-imports</code> com um padrão por feature, e a mensagem do lint aponta para a seção do CLAUDE.md. Hoje ela é <em>warning</em>, não erro, porque foi adotada com código legado que ainda a viola; a lista de avisos é a dívida visível, e ela só diminui.</p>
+
+<h2>6. Regras de código e como elas são impostas</h2>
+<table>
+  <tr><th style="width:28%">Regra</th><th style="width:40%">Problema que evita</th><th>Onde é imposta</th></tr>
+  <tr><td>Produto em português; identificadores em inglês ou no termo de domínio já usado</td><td>Copy misturada e uma terceira convenção de nomes por arquivo</td><td>Convenção; revisão por agente</td></tr>
+  <tr><td>Nenhum comentário no código</td><td>Comentário que envelhece e mente; nome ruim escondido atrás de explicação</td><td>Convenção; o porquê vai na mensagem de commit ou no PR</td></tr>
+  <tr><td>Tipagem estrita, sem <code>any</code>, <code>!</code> ou cast sem checagem</td><td>Erro de runtime que o compilador já pegaria</td><td><code>tsc --noEmit</code> no CI; justificativa no commit quando inevitável</td></tr>
+  <tr><td>Um único lugar traduz erro de infra (código do Postgres, status HTTP)</td><td>Erro cru chegando na UI por quinze <code>catch</code> diferentes</td><td>Módulo único por tipo de erro; teste por código</td></tr>
+  <tr><td>Design tokens: sem hex/rgb/hsl nem <code>fontSize</code> numérico; paleta crua só dentro de <code>src/theme</code></td><td>Tema escuro quebrado, contraste fora da norma, estilos impossíveis de mudar em lote</td><td><code>no-restricted-syntax</code> e <code>no-restricted-imports</code> no ESLint; teste de contraste da paleta</td></tr>
+  <tr><td>SDK nativo de terceiro entra por shim em <code>src/lib</code> (<code>.native.ts</code> / <code>.web.ts</code>), inicializado por um componente headless atrás de <code>Platform.OS !== 'web'</code></td><td>Módulo nativo no bundle web e no Jest</td><td><code>no-restricted-imports</code> barra o pacote fora de <code>src/lib</code></td></tr>
+  <tr><td>Erro capturado passa por uma porta única de monitoramento</td><td>Dois destinos divergentes; SDK chamado direto em todo <code>catch</code></td><td>ESLint barra o SDK e o shim fora de <code>src/lib</code></td></tr>
+  <tr><td>Texto legal tem versão presa ao conteúdo (SHA-256); o banco só aceita versão cadastrada com o mesmo hash e grava cada aceite em tabela só de inserção</td><td>Usuário aparecendo como tendo aceitado um texto que não viu</td><td>Teste que compara texto × hash × migração; RPC que rejeita hash divergente</td></tr>
+  <tr><td>Edge Function chamada pelo app autentica com o helper compartilhado, nunca com cópia local</td><td>Verificação de JWT divergente entre funções</td><td>Convenção, sem imposição</td></tr>
+</table>
+<p>A exceção registrada merece menção: o SDK de crash reporting inicializa no escopo do módulo do layout raiz, não num componente headless, porque um <code>useEffect</code> só roda depois do primeiro render e perderia crash de boot. A exceção está escrita ao lado da regra, com o motivo.</p>
+
+<h2>7. Registrando um padrão novo</h2>
+<p>Adotou um padrão? Ele é escrito no mesmo commit que o introduz. Sem registro, o padrão sobrevive até a próxima pessoa (ou o próximo agente) abrir o arquivo e escolher outra coisa; aí são dois jeitos de fazer a mesma coisa.</p>
+<p>Um registro tem quatro partes: <strong>o que fazer</strong>, <strong>o problema que evita</strong>, <strong>onde é imposto</strong> (lint, tipo, teste, CI, ou "convenção, sem imposição") e <strong>um arquivo de exemplo</strong>. Três consequências práticas:</p>
+<ul>
+  <li>Automatizar a imposição quando der. Neste repositório, regras de design token e de import viram regras no <code>eslint.config.js</code>, não lembrete em revisão.</li>
+  <li>Aplicar o padrão ao código existente no mesmo commit. Padrão que só vale para arquivo novo cria duas convenções em vez de uma.</li>
+  <li>Quando o padrão mudar, atualizar o registro.</li>
+</ul>
+<div class="caixa">
+  <div class="titulo">Exemplo recente</div>
+  <p>O Android com <em>edge-to-edge</em> desenha o app por baixo da barra de navegação do sistema. Conteúdo preso à base com padding fixo ficava escondido. A correção virou um hook (<code>useBottomSafePadding(base)</code>) que soma a área segura só no Android, foi aplicada a todos os pontos encontrados por uma varredura de agente, ganhou mock no setup do Jest e um registro em <code>docs/mobile-rules.md</code> com as quatro partes: o que, por quê, onde é imposto (convenção) e exemplo.</p>
+</div>
+
+<h2>8. Como as decisões de arquitetura são tomadas</h2>
+<p>O projeto não tem um diretório de ADRs. Tem algo mais barato e, na prática, mais usado: uma <strong>escada de onde uma capacidade mora</strong>, três critérios de corte e o hábito de escrever o porquê na mensagem de commit. Esta seção elabora cada um e mostra decisões reais tomadas com eles.</p>
+
+<h3>8.1 A escada: desça um nível só quando o de cima genuinamente não serve</h3>
+<ol>
+  <li><strong>Banco</strong>, se é invariante que vale para todo cliente da API: unicidade, transição de estado, autorização, agregado materializado.</li>
+  <li><strong>Lógica pura</strong> (<code>features/*/utils</code>, <code>src/data</code>), se é regra de negócio testável sem rede nem storage.</li>
+  <li><strong>Camada de acesso</strong> (<code>services</code>, cliente da API externa), se é query, mapeamento ou tradução de erro.</li>
+  <li><strong>Tela</strong>, se é apresentação, navegação ou estado local.</li>
+</ol>
+<p>A escada força a pergunta certa antes de escrever código: "se outro cliente (um script, um painel, uma função agendada) tocar nesse dado, a regra ainda vale?" Se a resposta é sim, a regra é do banco. Isso explica por que autorização, ciclo de vida e versão de texto legal vivem em policies, triggers e RPCs, e por que a tela só reflete o que o banco já garante.</p>
+
+<h3>8.2 Três critérios de corte</h3>
+<ul>
+  <li><strong>YAGNI ganha por padrão.</strong> Duas ocorrências não justificam abstração; três em contextos genuinamente idênticos, sim. Contexto diferente não é duplicação: não se unifica código que só parece igual hoje e vai divergir amanhã por motivos não relacionados.</li>
+  <li><strong>Estado inválido irrepresentável</strong> vence validação espalhada. Uma união discriminada de estados de resposta (<code>respondida | insuficiente | sem_documento | nao_indexado</code>) faz o compilador cobrar cada caso em vez de depender de um <code>if</code> em cada tela.</li>
+  <li><strong>Se entender um desenho novo exige abrir mais de dois arquivos, o desenho perdeu</strong>, mesmo estando tecnicamente correto.</li>
+</ul>
+
+<h3>8.3 Decisões concretas e seus trade-offs</h3>
+<h4>Autorização no Postgres com RLS</h4>
+<p>Alternativa descartada: filtrar por usuário nas queries do app. Motivo: todo cliente novo (painel, função, script de migração de dados) repetiria o filtro ou esqueceria. Custo aceito: toda tabela nova precisa de policy e de teste do ator não autorizado, e erros de permissão são mais difíceis de diagnosticar ("retorna zero linhas" em vez de 403). Um agente dedicado ao banco existe em parte por isso.</p>
+
+<h4>Segredos só em Edge Functions, e Vault para gatilhos</h4>
+<p>Uma versão anterior tinha a chave privilegiada do banco dentro da definição de um gatilho que chamava uma função de push. Funcionava, mas a definição do gatilho aparece em todo dump e no painel. A decisão foi mover URL e segredo para o Vault e fazer o gatilho ler de lá. O custo é um passo a mais no provisionamento de cada ambiente; o ganho é que um dump do esquema deixa de ser um vazamento.</p>
+
+<h4>Relógio do servidor por RPC, em plpgsql</h4>
+<p>O app precisa de "agora" para contagens regressivas, e o relógio do aparelho não é confiável. A solução é uma função <code>server_now()</code> no banco. Detalhe que custou uma investigação: a primeira versão era SQL puro e o planejador a <em>inlinava</em>; um plano preparado por um papel autenticado e reaproveitado por um anônimo pulava a checagem de <code>EXECUTE</code>. A função foi reescrita em plpgsql, que não é inlinado, e o motivo está no comentário da função no banco (o único lugar em que o projeto escreve comentário, porque o DDL não tem mensagem de commit).</p>
+
+<h4>Ciclo de vida da entidade central com rota única</h4>
+<p>O sistema externo recebia aceite e recusa por duas rotas. O contrato foi consolidado numa rota única de resposta, com anotação estruturada, e as transições passaram a ser rejeitadas onde o estado mora. Trade-off assumido: o app ainda precisa aceitar, por um tempo, uma transição que o operador humano do ERP pode registrar fora do prazo; isso está no backlog como decisão pendente do outro time, não como bug.</p>
+
+<h4>Texto legal com versão, hash e tabela só de inserção</h4>
+<p>Quando um termo muda, o que o usuário aceitou precisa ser provável depois. A escolha foi: o texto vive no código com versão e SHA-256; uma migração cadastra o par (versão, hash); uma RPC rejeita aceite cujo hash não bate; a tabela de aceites só aceita inserção. Um teste compara o texto exibido, o hash declarado e o SQL da migração. O custo é um ritual a cada mudança de texto (nova versão, nova migração aplicada <em>antes</em> do deploy do app, todos aceitam de novo). O ganho é não precisar explicar para um advogado por que o registro de aceite não bate com o texto.</p>
+
+<h4>Shim para SDKs nativos</h4>
+<p>Três SDKs nativos (suporte, mensageria, crash) entram por um arquivo em <code>src/lib</code> com variantes <code>.native.ts</code> e <code>.web.ts</code>. O Metro escolhe pelo sufixo; o Jest e a web nunca carregam o módulo nativo. A inicialização é um componente headless no layout raiz. O custo é manter a superfície do shim em dia com a do SDK; o ganho é um bundle web limpo e testes que não precisam mockar módulo nativo um por um.</p>
+
+<h4>Navegação nativa com dois layouts</h4>
+<p>A barra de abas usa o componente nativo (alpha no SDK atual) no iOS e no Android, e o componente em JavaScript na web. São dois arquivos de layout escolhidos por sufixo, e cada aba visível é uma pilha própria com cabeçalho nativo. Trade-off: rota nova nas abas entra nos dois arquivos, e o Metro não avisa se um ficar para trás. A armadilha está registrada; o ganho (gestos, grandes títulos e efeito de vidro nativos) foi considerado maior.</p>
+
+<h4>Cache persistido com limpeza no logout</h4>
+<p>As consultas são persistidas no aparelho para abrir rápido sem rede. A decisão de desenho que importa é a de <em>apagar</em>: ao sair da conta, o cache é limpo antes de qualquer tela montar, para um segundo usuário do mesmo aparelho nunca ver dado do primeiro. Um hook de "ainda restaurando" evita render com cache de outra sessão.</p>
+
+<h4>Gate de auditoria de dependências com allowlist</h4>
+<p><code>npm audit</code> cru bloqueia o CI por vulnerabilidades sem correção disponível. A solução é um script que falha só em <em>high</em>/<em>critical</em> fora de uma allowlist documentada, e ignora cópias que vivem apenas dentro das dependências empacotadas do próprio CLI do npm. Adicionar item à allowlist é decisão, não conserto: exige justificativa escrita. No dia em que duas vulnerabilidades críticas foram publicadas numa dependência transitiva do gerador de release, o gate parou a publicação até a atualização de quatro linhas no lockfile.</p>
+
+<h4>O porquê vai no commit, não no código</h4>
+<p>Com a regra de "nenhum comentário", o histórico do git virou o registro de decisões. Cada mensagem de commit tem um título em Conventional Commits e um corpo que explica a alternativa descartada quando houve uma. É um ADR leve: pesquisável por <code>git log --grep</code>, nunca desatualizado em relação ao código que acompanha.</p>
+
+<div class="licao">
+  <div class="titulo">Decisões que o pipeline de release ensinou</div>
+  <p><strong>Back-merge após cada release.</strong> A versão de marketing só sobe na branch principal. Um build de homologação gerado a partir da branch de desenvolvimento saía com a versão anterior, e a loja o recusou porque aquela versão já estava fechada. Hoje a branch principal volta para a de desenvolvimento depois de cada release, sem commit novo (fast-forward).</p>
+  <p><strong>Nome exibido, não nome do projeto.</strong> Para distinguir o build de homologação no aparelho, a primeira tentativa trocou o <code>name</code> do app por perfil de build. Isso renomeou o alvo do Xcode, e o serviço de build falhou ao atribuir o perfil de provisionamento. A solução correta muda só o nome exibido (<code>CFBundleDisplayName</code> no iOS, <code>app_name</code> no Android), por config plugin, lendo o perfil de build do ambiente.</p>
+  <p><strong>Jobs que herdam o skip.</strong> No GitHub Actions, um job sem <code>if</code> próprio é pulado quando qualquer job anterior na cadeia foi pulado. Os jobs de build mobile dependiam de um job de release que é sempre pulado fora da branch principal, então o disparo manual de homologação nunca gerava build. Cada job de build ganhou um <code>if</code> que olha só para o job que resolve o perfil.</p>
+</div>
+
+<h2>9. Testes: onde errar é caro</h2>
+<p>Teste existe onde errar é caro; porcentagem de cobertura não é objetivo. O <code>collectCoverageFrom</code> do projeto mostra o recorte real: utilitários puros das features centrais, o cliente da API externa, o módulo de status e o tema. O CLAUDE.md diz quando escrever e quando não:</p>
+<div class="duas">
+  <div class="caixa"><div class="titulo">Escreva teste quando</div>
+    <ul>
+      <li>uma regra de autorização tem caso não trivial, e o teste é do ator <em>não</em> autorizado;</li>
+      <li>uma transição de estado é adicionada: caso válido e caso rejeitado;</li>
+      <li>um prazo ou contagem é calculado;</li>
+      <li>uma regra está duplicada de propósito entre app e banco: o teste compara os dois mecanicamente.</li>
+    </ul>
+  </div>
+  <div class="caixa"><div class="titulo">Não escreva teste para</div>
+    <ul>
+      <li>getter;</li>
+      <li>mapeamento direto linha → DTO;</li>
+      <li>o que o sistema de tipos já garante.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>9.1 Os níveis que existem de verdade</h3>
+<table>
+  <tr><th style="width:22%">Nível</th><th style="width:22%">Ferramenta</th><th>O que cobre</th></tr>
+  <tr><td>Unitário</td><td>Jest com preset do Expo</td><td>Lógica pura (prazos, contagens, normalização de respostas, classificação de perguntas), paleta (contraste mínimo por par de tokens), componentes com mocks de módulos nativos, textos legais (texto × hash × migração).</td></tr>
+  <tr><td>Ponta a ponta web</td><td>Playwright contra o ambiente de homologação real, com o sistema externo mockado por rota</td><td>Fluxos de login, cadastro, listas, uploads, notificações; e uma suíte de RLS que cria dois usuários e prova que um não lê o outro.</td></tr>
+  <tr><td>Carga</td><td>k6, com limiares declarados</td><td>Leitura concorrente, rota de resposta, lote de webhooks; alvos registrados como regra (p95 por rota, tamanho de lote).</td></tr>
+  <tr><td>Sondas de segurança e concorrência</td><td>Scripts Node contra as Edge Functions e o banco de homologação</td><td>Método e segredo errados, payload inválido, limite de lote, replay de evento, aceite duplicado, chamadas paralelas, relógio.</td></tr>
+  <tr><td>No aparelho</td><td>Roteiro humano, com número de build</td><td>Push, deep link, resiliência sem rede, acessibilidade.</td></tr>
+</table>
+
+<h3>9.2 Um plano de testes executável por agente</h3>
+<p>O projeto tem um plano de quinze dias escrito para ser <em>executado pelo agente</em>, não lido por uma pessoa. Ele abre com instruções operacionais: o ambiente alvo (sempre homologação; produção só leitura, e só onde o teste disser), como provar o alvo antes da primeira escrita do dia, como obter credenciais sem jamais imprimi-las, o prefixo dos dados de teste e a limpeza obrigatória, o formato do registro de resultados (uma linha por execução: ID, data, resultado, evidência, observação), quando parar e pedir decisão humana (falha de segurança ou de concorrência interrompe a sessão) e a escala de severidade.</p>
+<p>Três agentes dedicados sustentam o plano: um que decide a estratégia e o dimensionamento, um que revisa executabilidade, determinismo e isolamento do código de teste, e um que transforma o modelo de ameaças em sondas. Os resultados vivem num documento versionado, e cada bug encontrado vira item de backlog com o ID do teste.</p>
+
+<h2>10. CI, versionamento e release</h2>
+<h3>10.1 O portão único</h3>
+<p><code>npm run build</code> é a verificação completa: lint, <code>expo-doctor</code>, export da web, typecheck, checagem das Edge Functions em Deno, testes e o gate de auditoria. Roda uma vez, no fim de uma tarefa; não depois de cada edição. O CI roda o mesmo comando, então "passou aqui" e "passou lá" significam a mesma coisa.</p>
+
+<h3>10.2 Versão a partir dos commits</h3>
+<p>A versão de marketing vem do <code>semantic-release</code>, que lê os commits na branch principal desde a última tag e aplica Conventional Commits. O número de build é da plataforma de build, incrementado automaticamente, e ninguém precisa alinhar os dois.</p>
+<table>
+  <tr><th>Prefixo</th><th>Efeito</th></tr>
+  <tr><td><code>fix:</code></td><td>patch</td></tr>
+  <tr><td><code>feat:</code></td><td>minor</td></tr>
+  <tr><td><code>feat!:</code> ou rodapé <code>BREAKING CHANGE:</code></td><td>major</td></tr>
+  <tr><td><code>chore:</code>, <code>docs:</code>, <code>refactor:</code>, <code>test:</code>, <code>ci:</code></td><td>nenhum: não gera release nem build de loja</td></tr>
+</table>
+<p>Um commit vazio com <code>fix:</code> é a forma oficial de "gerar uma versão nova sem mudar nada", por exemplo para abrir um teste externo na loja com um número distinto do que está em análise.</p>
+
+<h3>10.3 O que acontece no push na branch principal</h3>
+<ol>
+  <li>Job de qualidade: o portão único.</li>
+  <li>Job de release: calcula a versão; se houver bump, atualiza os manifestos e o changelog, commita com <code>[skip ci]</code>, cria a tag e a Release.</li>
+  <li>Deploy da web a partir do commit da tag.</li>
+  <li>Builds mobile com perfil de produção e envio automático às lojas, só se houve release.</li>
+</ol>
+<p>Push na branch de desenvolvimento roda o portão e publica a web de homologação. Build mobile de homologação é manual, por <code>workflow_dispatch</code> com o perfil correspondente, e o app resultante aparece no aparelho com outro nome.</p>
+<p>Duas regras de processo completam o fluxo: a PR de desenvolvimento para principal é fundida com <em>merge commit</em> (com squash, só o título da PR decidiria o bump), e um job comenta na PR a <strong>prévia da versão</strong> que o merge vai gerar, calculada com <code>semantic-release</code> em modo dry-run. Esse job precisou de um ajuste: dentro de uma PR o GitHub informa o branch como <code>refs/pull/N/merge</code>, e o <code>semantic-release</code> concluía que não estava na branch de publicação. O script passou a ignorar as variáveis de ambiente do CI que descrevem o ref e a usar o branch do checkout.</p>
+
+<h3>10.4 Supply chain</h3>
+<p>Actions pinadas por SHA, <code>permissions:</code> mínimo por job, <code>npm ci</code> (nunca <code>npm install</code>) e o gate de auditoria com allowlist documentada. O hook de pré-commit roda lint e formatação só no que está em stage.</p>
+
+<h2>11. Claude Code no projeto: agentes, hooks, memória e disciplina de contexto</h2>
+<h3>11.1 Agentes especializados</h3>
+<p>O repositório define agentes em <code>.claude/agents/*.md</code>. Cada um tem uma descrição que diz <em>quando</em> usá-lo e, tão importante quanto, <em>o que ele não faz</em> e quem faz. Essa negativa explícita é o que impede o agente principal de pedir revisão de SQL a quem revisa código de aplicação, ou de pedir desenho a quem só revisa diff.</p>
+<table>
+  <tr><th style="width:22%">Agente</th><th>Papel</th><th style="width:22%">Ferramentas</th></tr>
+  <tr><td><code>architect</code></td><td>Decide desenho antes de o código existir: onde uma capacidade mora, se vale abstrair, se uma fronteira precisa mover.</td><td>Leitura e busca</td></tr>
+  <tr><td><code>code-reviewer</code></td><td>Revisa código já escrito, antes do commit: duplicação real, carga cognitiva, nomes, aderência às convenções do projeto.</td><td>Leitura e busca</td></tr>
+  <tr><td><code>db-guardian</code></td><td>Escreve e revisa tudo da camada de banco: migrações, RLS, policies, gatilhos, funções e seus testes. Diagnostica "retorna zero linhas".</td><td>Leitura, escrita, shell</td></tr>
+  <tr><td><code>security-reviewer</code></td><td>Revisa mudanças que tocam autenticação, privilégio, segredos, dependências ou workflow de CI.</td><td>Leitura e busca</td></tr>
+  <tr><td><code>test-writer</code></td><td>Decide o que merece teste e escreve os que faltam; em bug, o teste que falha primeiro.</td><td>Leitura, escrita, shell</td></tr>
+  <tr><td><code>ux-auditor</code> / <code>ux-fixer</code></td><td>Um audita fluxos e copy contra heurísticas e escreve um plano em lotes; o outro executa um lote exatamente como escrito, sem decidir nada. Vários fixers rodam em paralelo.</td><td>Auditor: leitura e escrita de doc. Fixer: edição.</td></tr>
+  <tr><td><code>device-qa</code></td><td>Roda o app num aparelho conectado, tira screenshot, toca, lê o que diverge. Não escreve código.</td><td>Shell (adb)</td></tr>
+  <tr><td><code>architect-testes</code>, <code>code-reviewer-testes</code>, <code>security-reviewer-testes</code></td><td>Estratégia, revisão e sondas de segurança do plano de testes executável.</td><td>Leitura e busca</td></tr>
+  <tr><td><code>context-guard</code></td><td>Audita contexto e encolhe saídas de ferramenta.</td><td>Todas</td></tr>
+</table>
+<p>Três escolhas de desenho dos agentes: ferramentas mínimas por papel (revisores não editam), modelo por papel (o executor de lotes de UX usa um modelo mais barato, porque não decide), e origem comum: as definições vêm de um repositório interno de padrões e são <strong>copiadas e adaptadas</strong>, nunca linkadas, para que cada projeto possa divergir sem quebrar o outro.</p>
+
+<h3>11.2 Hooks e permissões</h3>
+<ul>
+  <li><strong>PostToolUse</strong>: todo arquivo editado ou escrito passa pelo formatador do projeto. Motivo: sem isso, cada mudança vira um ciclo "editar → rodar lint → achar aspas erradas → editar de novo", e formatação nunca deve custar um turno de raciocínio. O hook é silencioso por contrato: uma falha nele nunca interrompe o agente.</li>
+  <li><strong>permissions.deny</strong>: o agente não lê lockfiles, <code>node_modules</code>, saídas de build, cobertura nem arquivos <code>.env</code>. Um <code>.claudeignore</code> reforça a lista para busca.</li>
+  <li><strong>Modo automático com classificador</strong>: ações que o classificador considera "aplicar às cegas" (por exemplo, aplicar migração num banco) param e pedem decisão. O agente é instruído a não contornar; ele termina o resto da tarefa e explica o que ficou pendente.</li>
+</ul>
+
+<h3>11.3 Disciplina de contexto</h3>
+<p>A seção mais pragmática do CLAUDE.md: ler o trecho, não o arquivo; nunca ler gerado nem vendorado; não reler o que acabou de editar; busca ampla vai para um subagente que devolve uma conclusão, não uma pilha de arquivos; não colar diff grande na resposta; rodar a verificação completa uma vez; saída grande de ferramenta entra resumida (contagem e tipos de falha, não as quinhentas linhas).</p>
+<p>Na prática, uma sessão típica delega a varredura ("onde mais isso pode acontecer?") a um agente de exploração em modo somente leitura, recebe uma tabela com arquivo, linha e gravidade, e aplica as correções em lote com um script, em vez de abrir quatorze arquivos um por um.</p>
+
+<h3>11.4 Memória persistente</h3>
+<p>Além do CLAUDE.md (que é do projeto e versionado), o agente mantém uma memória local por projeto, com um arquivo por fato e um índice de uma linha por memória. Os tipos são: <em>feedback</em> (como o usuário quer que o trabalho seja feito, com o porquê), <em>project</em> (contexto que não dá para deduzir do código, com datas absolutas), <em>reference</em> (ponteiros externos) e <em>user</em>. Exemplos de feedback que viraram regra: nenhum comentário no código; nenhuma coautoria do agente em commit, PR ou comentário; ser breve nas respostas; nunca imprimir segredos. Exemplos de projeto: quais são os dois ambientes e qual o CLI está apontando; que o merge na branch principal manda o Android direto à trilha de produção.</p>
+
+<h3>11.5 Skills e workflows multiagente</h3>
+<p>Uma <em>skill</em> é um procedimento empacotado (um <code>SKILL.md</code> com instruções, mais referências, scripts e modelos) que o agente carrega quando a tarefa bate com a descrição. O projeto usou a skill de criação de skills para transformar um processo longo em uma skill reutilizável (seção 14). Para tarefas que exigem dezenas de agentes com dependências entre eles, o projeto usa <em>workflows</em>: scripts que orquestram <code>agent()</code>, <code>parallel()</code> e <code>pipeline()</code> de forma determinística, com fases nomeadas e saída tipada por esquema.</p>
+
+<h2>12. Servidores MCP</h2>
+<p>O Model Context Protocol permite acoplar ferramentas externas ao agente. O projeto declara os servidores em um <code>.mcp.json</code> versionado, para que qualquer pessoa que clone o repositório tenha o mesmo conjunto.</p>
+<table>
+  <tr><th style="width:26%">Servidor</th><th>Para quê</th></tr>
+  <tr><td>git</td><td>Operações de git como ferramentas tipadas (status, diff, log, blame), com integração à interface de permissões.</td></tr>
+  <tr><td>memory</td><td>Grafo de conhecimento com entidades e relações, complementar à memória por arquivos.</td></tr>
+  <tr><td>playwright</td><td>Navegador controlado pelo agente: abrir a web do app, tirar snapshot de acessibilidade, clicar, ler console e rede. Usado para verificar deploys e reproduzir bugs de layout.</td></tr>
+  <tr><td>codegraphcontext</td><td>Grafo de código indexado: achar chamadores, código morto, funções mais complexas, simular impacto de uma mudança.</td></tr>
+  <tr><td>tree-sitter</td><td>Análise sintática por linguagem, para consultas estruturais.</td></tr>
+  <tr><td>sequential-thinking</td><td>Raciocínio em etapas revisáveis para problemas com muitas dependências.</td></tr>
+  <tr><td>papo</td><td>Comunicação direta entre agentes de máquinas diferentes (seção 13).</td></tr>
+</table>
+<div class="licao">
+  <div class="titulo">Lições de setup no Windows</div>
+  <p>O servidor de grafo de código não precisa de um banco de grafos externo; o backend embutido basta. O servidor de tree-sitter exige uma versão específica do SDK de MCP e quebra com a mais nova. O servidor de Playwright responde ao handshake antes de o navegador estar pronto, então a primeira chamada pode falhar sem que o servidor esteja "fora". Cada uma dessas três custou mais de uma hora e está registrada na memória do agente.</p>
+</div>
+
+<h2>13. papo: quando dois Claudes precisam combinar um contrato</h2>
+<p>O app conversa com um sistema externo mantido por outro time, em outro repositório, em outra máquina. Toda vez que um contrato muda (formato de um evento, motivo de erro novo, status HTTP de uma falha), alguém vira proxy: copia a pergunta de um Claude, cola no chat, o colega cola no Claude dele, copia a resposta e manda de volta.</p>
+<p>O <strong>papo</strong> (<a href="https://github.com/Kelvin-Jesus/papo">github.com/Kelvin-Jesus/papo</a>, MIT) resolve isso. É um binário único, sem servidor para hospedar, que conecta duas instâncias do Claude Code ponto a ponto, com criptografia de ponta a ponta e fila para mensagens offline. Para o agente, ele aparece como um servidor MCP; com os <em>channels</em> do Claude Code, a mensagem do colega chega sozinha na sessão e o agente reage sem que alguém digite.</p>
+<h3>13.1 Como foi configurado</h3>
+<ol>
+  <li>O próprio agente instalou o binário seguindo a seção "Instruções para o agente" do README do projeto, conferindo o hash do arquivo baixado.</li>
+  <li>Criou uma identidade com nome e entrou numa sala por convite recebido do colega. Quando a sala foi trocada, a identidade antiga foi substituída.</li>
+  <li>Registrou o servidor MCP no escopo do projeto (<code>claude mcp add --scope local papo -- &lt;caminho&gt; mcp</code>).</li>
+  <li>A sessão com push de mensagens é aberta pelo usuário, com a flag de canais de desenvolvimento apontando para o servidor.</li>
+</ol>
+<h3>13.2 O que ele muda na prática</h3>
+<p>Uma negociação típica: o agente do app avisa que uma falha definitiva do webhook passará a voltar como 207 em vez de 500 e que um id inválido vira 400; o agente do outro lado lê o próprio handler, responde o que precisa mudar, e os dois fecham o contrato. Os humanos recebem um resumo e só são chamados quando há decisão a tomar. O servidor instrui o agente a escrever mensagens que se explicam sozinhas, a não vazar segredo para o outro lado e a não entrar em loop de "ok, obrigado".</p>
+
+<h2>14. A skill de relatórios de proteção de dados e engenharia</h2>
+<p>Em um momento do projeto foi preciso entregar dois documentos formais: uma análise de proteção de dados pessoais, para um advogado encaminhar a uma consultoria, e um relatório de engenharia, qualidade e testes, para engenheiros e gestores. O processo que produziu os dois (cerca de 60 agentes de análise e 17 de redação, volumes de mais de 250 e 160 páginas) foi longo demais para ser repetido de memória. Ele virou uma <strong>skill</strong>.</p>
+<h3>14.1 O que a skill produz</h3>
+<ul>
+  <li><strong>Volume I: proteção de dados.</strong> Inventário de dados e operadores, direitos dos titulares, segurança, achados <em>verificados</em> e <em>refutados</em>, quesitos para o jurídico, plano de adequação. Não dá parecer: descreve fatos com evidência conferível e aponta dispositivos "possivelmente relacionados". A força é a precisão; um único fato errado desacredita o documento inteiro, e todo o método existe para impedir isso.</li>
+  <li><strong>Volume II: engenharia, qualidade e testes.</strong> Arquitetura, regras de codificação, catálogo de testes com nomes e resultados, avaliações de usabilidade com método GenderMag e persona de domínio, uso de IA no desenvolvimento, guia prático. Cada capítulo diz o quê, por quê, como foi aplicado, a evidência e a lição.</li>
+  <li>Dois PDFs em LaTeX, dois pacotes para Overleaf e os papéis de trabalho (dossiês, refutações, registro de achados em JSON) que sustentam qualquer afirmação se alguém pedir a prova.</li>
+</ul>
+<h3>14.2 Como a skill está organizada</h3>
+<table>
+  <tr><th style="width:30%">Arquivo</th><th>Quando o agente lê</th></tr>
+  <tr><td><code>SKILL.md</code></td><td>Sempre: mapa, passo zero com o usuário, regras para todo agente, fases, pedidos parciais, adaptações.</td></tr>
+  <tr><td><code>references/metodo-lgpd.md</code></td><td>Trilha de proteção de dados: contexto, gravidade, dimensões, prompts, consolidação, consultas agregadas.</td></tr>
+  <tr><td><code>references/base-legal.md</code></td><td>Base jurídica verificada, com retrato do regulador na data e armadilhas de citação.</td></tr>
+  <tr><td><code>references/metodo-ux.md</code>, <code>engenharia.md</code>, <code>redacao.md</code>, <code>latex.md</code></td><td>Catálogo de telas e avaliações; inventário do Volume II; roteiro de cada capítulo e prompts de redator; identidade visual e compilação.</td></tr>
+  <tr><td><code>references/licoes.md</code></td><td>Antes de orquestrar: o que deu errado na execução de referência (custo e interrupção, verdade, redação, ferramentas, relação com o usuário).</td></tr>
+  <tr><td><code>assets/workflows/</code>, <code>assets/latex/</code></td><td>Modelos de workflow multiagente parametrizados; estilo LaTeX, modelos dos dois volumes e diagramas.</td></tr>
+  <tr><td><code>scripts/</code></td><td>Preparar volumes, gerar registro de achados, gerar anexo de testes, renderizar páginas, detectar linhas estouradas, empacotar, limpar texto de lei, extrair PDF.</td></tr>
+</table>
+<h3>14.3 Três escolhas de método</h3>
+<ul>
+  <li><strong>Passo zero obrigatório.</strong> Antes de gastar qualquer agente, a skill pergunta o que não dá para deduzir do repositório: quais volumes, quem pede e em que papel (dono dos dados, desenvolvedor contratado, fornecedor multi-cliente), identificação de capa, quem são os titulares, ambientes e acesso. Isso muda papéis jurídicos, abertura e capítulos inteiros.</li>
+  <li><strong>Verificação adversarial.</strong> Cada achado de proteção de dados passa por um agente que tenta refutá-lo com evidência do código ou do banco. Só o que sobrevive entra como "verificado"; o que cai entra como "refutado", com a prova. Um documento jurídico não pode afirmar conformidade sem prova nem apontar problema que não existe.</li>
+  <li><strong>Separar análise de redação.</strong> Os agentes de análise produzem dossiês estruturados; os de redação escrevem capítulos a partir dos dossiês, com passes de edição. Misturar os dois produzia texto bonito sobre fatos não conferidos.</li>
+</ul>
+<h3>14.4 Como foi criada e testada</h3>
+<p>A skill foi extraída com a skill de criação de skills: capturar a intenção a partir do histórico da própria execução, escrever o rascunho, rodar casos de teste com e sem a skill, comparar. O teste decisivo foi um <em>dry-run</em> contra uma stack diferente (outra linguagem, outro banco) para tirar do texto tudo o que era específico do projeto de origem. O resultado é um pacote <code>.skill</code> instalável em qualquer máquina. Limitação honesta: ela foi testada a seco, sem uma execução completa em outro projeto.</p>
+
+<h2>15. Lições aprendidas</h2>
+<p>Cada item abaixo custou pelo menos uma sessão e por isso está no CLAUDE.md, em <code>docs/mobile-rules.md</code> ou na memória do agente.</p>
+<ul>
+  <li><strong>Rota nova quebra o typecheck até reiniciar o servidor de desenvolvimento.</strong> Rotas tipadas são geradas no start do bundler; não se "conserta" o erro mudando o código da rota.</li>
+  <li><strong><code>EXPO_PUBLIC_*</code> é inlinado em build time.</strong> Mudar o <code>.env</code> não muda um app já buildado.</li>
+  <li><strong>Diretórios nativos são gerados.</strong> Editar lá evapora no próximo prebuild; a mudança vai no config ou num plugin.</li>
+  <li><strong>Dois ambientes e um CLI linkado.</strong> Confirmar para qual ambiente se está apontando antes de qualquer escrita; o plano de testes exige provar o alvo todo dia.</li>
+  <li><strong>Arquivo de tipos gerado já foi commitado vazio.</strong> Um redirecionamento de shell truncava o arquivo antes de o gerador falhar. O script atual só grava se a saída tiver o tipo esperado.</li>
+  <li><strong>Componentes nativos em beta exigem dev client novo a cada versão.</strong> O componente que os usa carrega por <code>require</code> condicional e cai num fallback em JavaScript.</li>
+  <li><strong>Edge-to-edge no Android.</strong> Padding fixo na base não é área segura; o ajuste automático de inset é só do iOS.</li>
+  <li><strong>Tokens de fundo de página não servem para tiles.</strong> No tema escuro, o tile afunda em vez de subir.</li>
+  <li><strong>Codificação ao editar por shell no Windows.</strong> Um cmdlet de escrita corrompeu acentos num arquivo de código-fonte; o teste de texto pegou. Edições de texto com acento passam por ferramenta de edição, não por pipeline de shell.</li>
+  <li><strong>Versão fechada na loja.</strong> Um build de homologação com a mesma versão de marketing de um build já aprovado é recusado; a versão precisa voltar da branch principal para a de desenvolvimento após cada release.</li>
+  <li><strong>Função SQL inlinada pula a checagem de permissão em plano reaproveitado.</strong> plpgsql quando a função é portão de acesso.</li>
+</ul>
+
+<h2>16. O que levar deste caso</h2>
+<ol>
+  <li><strong>Escreva o contrato antes do código.</strong> Um CLAUDE.md com invariantes, fronteiras e imposição explícita é o que transforma um agente genérico em um colega que conhece o projeto.</li>
+  <li><strong>Imponha por máquina o que der.</strong> Lint para tokens e imports, teste para texto legal, gate para dependências, policy para autorização. O que sobra como convenção, nomeie como convenção.</li>
+  <li><strong>Dê a cada agente um papel e uma negativa.</strong> "Não use para X; isso é do agente Y" evita mais erros do que qualquer lista de capacidades.</li>
+  <li><strong>Trate o histórico do git como registro de decisões.</strong> Sem comentários no código, o porquê mora na mensagem de commit, e ela nunca envelhece em relação ao código.</li>
+  <li><strong>Registre a armadilha no mesmo dia.</strong> Cada item da seção 15 foi escrito na sessão em que custou tempo. É a parte do projeto que mais economiza.</li>
+  <li><strong>Faça os agentes falarem entre si quando o contrato cruza repositórios.</strong> Ferramentas como o papo tiram o humano do papel de proxy e deixam para ele só a decisão.</li>
+  <li><strong>Transforme processos longos em skills.</strong> O que um time fez uma vez com sessenta agentes vira um pacote que outro time roda com um pedido, desde que tenha sido testado fora do contexto de origem.</li>
+</ol>
+
+<p class="nota-fim">Este artigo descreve práticas de um projeto real, com identificadores, nomes e regras de negócio removidos. As ferramentas citadas são públicas: Expo, Supabase, Playwright, k6, semantic-release, GitHub Actions, Claude Code, Model Context Protocol e papo. Nenhuma afirmação aqui depende de dado confidencial para ser verificada.</p>
+
+</body>
+</html>

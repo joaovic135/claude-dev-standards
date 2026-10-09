@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@cyanheads/git-mcp-server"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.79", "--browser", "chromium"]
+    },
+    "codegraphcontext": {
+      "command": "cgc",
+      "args": ["mcp", "start"]
+    },
+    "tree-sitter": {
+      "command": "mcp-server-tree-sitter",
+      "args": []
+    }
+  }
+}

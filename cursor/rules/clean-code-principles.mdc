@@ -1,0 +1,171 @@
+---
+description: Princípios de Clean Code — KISS, DRY, AHA, YAGNI, imutabilidade e legibilidade
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Clean Code — Princípios e Práticas
+
+---
+
+## KISS — Keep It Simple, Stupid
+
+> "A menor e mais simples solução quase sempre é a melhor."
+
+Evite arquiteturas de camadas desnecessárias. Se uma função simples resolve, use uma função simples.
+
+```ts
+// ❌ ERRADO — over-engineering para um cálculo trivial
+class PriceCalculatorFactory {
+  static create() { return new PriceCalculator(); }
+}
+class PriceCalculator {
+  calculate(price: number, discount: number) { return price - discount; }
+}
+
+// ✅ CORRETO
+const applyDiscount = (price: number, discount: number) => price - discount;
+```
+
+---
+
+## DRY — Don't Repeat Yourself
+
+> "Evite duplicação de lógica. Isole regras que aparecem em mais de um lugar."
+
+```ts
+// ❌ ERRADO — mesma validação em três telas
+if (!email.includes('@')) { setError('E-mail inválido'); }
+
+// ✅ CORRETO — isolado e reutilizável
+// src/lib/validators.ts
+export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+```
+
+---
+
+## AHA — Avoid Hasty Abstractions
+
+> "Duplicação de código visual pode ser melhor do que uma abstração prematura e errada."
+
+Espere a necessidade real antes de abstrair. Dois componentes parecidos não são, necessariamente, o mesmo componente.
+
+```tsx
+// Aceitável — dois cards parecidos com contextos diferentes
+// Criar um "SuperCard" genérico com 10 props condicionais seria pior
+<ExpertCard name={expert.name} specialty={expert.specialty} />
+<CaseCard title={case.title} status={case.status} />
+```
+
+Abstração certa: quando há 3+ ocorrências com **exatamente** a mesma forma e propósito.
+
+---
+
+## YAGNI — You Ain't Gonna Need It
+
+> "Não escreva código para cenários hipotéticos do futuro. Foque no que é necessário agora."
+
+```ts
+// ❌ ERRADO — preparando para casos que talvez nunca existam
+function fetchUser(id: string, format?: 'json' | 'xml' | 'csv', version?: 'v1' | 'v2') {
+  // lógica especulativa...
+}
+
+// ✅ CORRETO — resolve o problema atual
+async function fetchUser(id: string): Promise<User> {
+  return supabase.from('users').select('*').eq('id', id).single();
+}
+```
+
+---
+
+## Imutabilidade
+
+> "Nunca mude estado ou objetos diretamente. Sempre crie uma nova cópia."
+
+O React detecta mudanças por referência. Mutar um objeto diretamente não dispara re-render.
+
+```ts
+// ❌ ERRADO — mutação direta, React não detecta a mudança
+user.name = 'João';
+setUser(user);
+
+// ✅ CORRETO — nova referência, React re-renderiza corretamente
+setUser({ ...user, name: 'João' });
+
+// ✅ CORRETO — arrays
+setItems([...items, newItem]);           // adicionar
+setItems(items.filter(i => i.id !== id)); // remover
+setItems(items.map(i => i.id === id ? { ...i, done: true } : i)); // atualizar
+```
+
+---
+
+## Funções Puras
+
+> "Funções utilitárias devem receber uma entrada e retornar uma saída — sem efeitos colaterais."
+
+```ts
+// ❌ ERRADO — efeito colateral escondido
+let callCount = 0;
+function formatDate(date: Date) {
+  callCount++; // side effect
+  return date.toLocaleDateString('pt-BR');
+}
+
+// ✅ CORRETO — pura, previsível, fácil de testar
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString('pt-BR');
+}
+```
+
+---
+
+## Legibilidade e Nomes Descritivos
+
+> "O maior leitor do seu código é outro ser humano — ou você mesmo daqui a 6 meses."
+
+### Variáveis e estado
+
+```ts
+// ❌ ERRADO
+const [d, setD] = useState<Date | null>(null);
+
+// ✅ CORRETO
+const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+```
+
+### Funções de evento
+
+Use o prefixo `handle` para handlers e `on` para props que recebem esses handlers:
+
+```tsx
+// ❌ ERRADO
+<Button onPress={buttonPress} />
+
+// ✅ CORRETO
+<Button onPress={handleSendMessage} />
+
+// Em componentes filhos: prop usa "on", implementação usa "handle"
+interface ChatInputProps {
+  onSendMessage: (text: string) => void; // prop: "on"
+}
+function ChatInput({ onSendMessage }: ChatInputProps) {
+  const handleSubmit = () => onSendMessage(inputValue); // handler: "handle"
+  return <TextInput onSubmitEditing={handleSubmit} />;
+}
+```
+
+### Comentários
+
+```ts
+// ❌ ERRADO — descreve o que o código já diz
+// Incrementa o contador
+setCount(count + 1);
+
+// ✅ CORRETO — explica o porquê de uma decisão não óbvia
+// O SDK do iOS retorna timestamps em segundos; convertemos para ms para alinhar com o padrão JS
+const timestamp = nativeEvent.timestamp * 1000;
+```
+
+Use comentários **apenas** para explicar o *porquê* de uma decisão estranha ou um workaround — nunca para descrever *o que* o código faz.

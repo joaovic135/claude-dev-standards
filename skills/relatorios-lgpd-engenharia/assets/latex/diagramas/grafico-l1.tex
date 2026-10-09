@@ -1,0 +1,14 @@
+\documentclass[border=6pt]{standalone}
+\input{preambulo-diagrama}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[relatorio,ybar,bar width=1.25cm,ymin=0,ymax=560,
+  symbolic x coords={50,100,200,400},xtick=data,enlarge x limits=0.18,
+  xlabel={Usuários virtuais simultâneos},ylabel={Tempo de resposta, percentil 95 (ms)},
+  nodes near coords,ytick={0,100,200,300,400,500}]
+\addplot[fill=corprimaria,draw=none] coordinates {(50,202) (100,202) (200,215) (400,242)};
+\draw[sevalta,dashed,line width=0.8pt] (rel axis cs:0,0.8929) -- (rel axis cs:1,0.8929);
+\node[anchor=south east,font=\sffamily\scriptsize,text=sevalta] at (rel axis cs:1,0.8929) {limite de aceitação: 500 ms};
+\end{axis}
+\end{tikzpicture}
+\end{document}

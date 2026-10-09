@@ -1,0 +1,52 @@
+\documentclass[border=6pt]{standalone}
+\input{preambulo-diagrama}
+\newcommand{\nDimensoes}{?}
+\newcommand{\nRefutacoes}{?}
+\newcommand{\nRefutPorDim}{?}
+\newcommand{\nLacunas}{?}
+\newcommand{\nAchados}{?}
+\newcommand{\nCriticos}{?}
+\newcommand{\nAltos}{?}
+\newcommand{\nMedios}{?}
+\newcommand{\nBaixos}{?}
+\newcommand{\nInformativos}{?}
+\newcommand{\Prefixo}{LGPD}
+\newcommand{\TituloLista}{As dimensões analisadas}
+\newcommand{\ListaDimensoes}{%
+  1.\ inventário de dados pessoais & 4.\ direitos, retenção e eliminação & 7.\ dados de terceiros e sigilo\\
+  2.\ operadores e transferência internacional & 5.\ segurança e incidentes & 8.\ lojas e declarações públicas\\
+  3.\ transparência, bases legais e aceite & 6.\ inteligência artificial & 9.\ versão web}
+\newcommand{\num}[1]{{\bfseries\LARGE\color{corprimaria}#1}}
+\newcommand{\etapa}[6]{%
+  \node[#1,minimum width=2.62cm,minimum height=4.15cm,anchor=north,inner sep=0pt] (#2) at (#3,0) {};
+  \node[anchor=north,text width=2.36cm,align=center,inner sep=0pt] (#2t) at ([yshift=-0.42cm]#2.north) {\textbf{#4}};
+  \node[anchor=north,inner sep=0pt] (#2n) at ([yshift=-1.22cm]#2.north) {\num{#5}};
+  \node[anchor=north,text width=2.36cm,align=center,inner sep=0pt,font=\sffamily\scriptsize] at ([yshift=-1.95cm]#2.north) {#6};
+}
+\begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\begin{tikzpicture}
+\tikzset{
+  passo/.style={font=\sffamily\bfseries\scriptsize,text=white,fill=corprimaria,circle,inner sep=1.6pt,minimum size=13pt},
+}
+\etapa{caixa}{e1}{0}{Análise\\por dimensão}{\nDimensoes}{dimensões em paralelo, um dossiê por dimensão}
+\etapa{caixa}{e2}{3.02}{Verificação\\independente}{\nDimensoes}{verificações, uma por dossiê, com correção no próprio arquivo}
+\etapa{caixa}{e3}{6.04}{Refutação\\adversarial}{\nRefutacoes}{refutações de achados graves, até \nRefutPorDim\ por dimensão}
+\etapa{caixa}{e4}{9.06}{Crítico de\\completude}{\nLacunas}{lacunas, cada uma em uma apuração complementar}
+\etapa{caixaforte}{e5}{12.08}{Registro\\mestre}{\nAchados}{achados únicos, de \Prefixo-01 a \Prefixo-\nAchados}
+\foreach \i in {1,...,5} {\node[passo] at (e\i.north) {\i};}
+\foreach \a/\b in {e1/e2,e2/e3,e3/e4,e4/e5} {\draw[setaforte] (\a.east) -- (\b.west);}
+\draw[draw=corprimaria!45,line width=0.4pt] ([xshift=6pt,yshift=1.16cm]e5.south west) -- ([xshift=-6pt,yshift=1.16cm]e5.south east);
+\node[anchor=south,font=\sffamily\scriptsize,align=center,inner sep=0pt] at ([yshift=7pt]e5.south) {%
+  {\color{corcinza}\textbf{\nCriticos}} críticos\enspace{\color{sevalta}\textbf{\nAltos}} altos\\[1pt]
+  {\color{sevmedia}\textbf{\nMedios}} médios\enspace{\color{sevbaixa}\textbf{\nBaixos}} baixos\\[1pt]
+  {\color{sevinformativa}\textbf{\nInformativos}} informativos};
+\draw[decorate,decoration={brace,mirror,amplitude=4pt},draw=corsuave,line width=0.5pt]
+  ([yshift=-5pt]e1.south west) -- ([yshift=-5pt]e1.south east);
+\node[rotulo,anchor=north west,align=left] at ([xshift=-2pt,yshift=-14pt]e1.south west) {%
+  \textbf{\color{cortinta}\TituloLista}\\[2pt]
+  \begin{tabular}{@{}l@{\hspace{1.6em}}l@{\hspace{1.6em}}l@{}}
+  \ListaDimensoes
+  \end{tabular}};
+\end{tikzpicture}
+\end{document}

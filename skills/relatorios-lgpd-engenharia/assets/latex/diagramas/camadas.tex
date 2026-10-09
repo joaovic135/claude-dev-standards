@@ -1,0 +1,22 @@
+\documentclass[border=6pt]{standalone}
+\input{preambulo-diagrama}
+\newcommand{\CamadaBase}{\texttt{src/lib} \textperiodcentered\ \texttt{src/types}}
+\newcommand{\CamadaLogica}{\texttt{src/domain}}
+\newcommand{\CamadaAcesso}{\texttt{src/services}}
+\newcommand{\CamadaTelas}{\texttt{src/app} \textperiodcentered\ \texttt{src/components}}
+\newcommand{\QuemFalaComFora}{únicos que falam com o banco e com APIs externas}
+\begin{document}
+\begin{tikzpicture}[node distance=0.55cm]
+\tikzset{camada/.style={caixa,minimum width=12.4cm,minimum height=1.25cm,text width=11.8cm}}
+\node[camada,fill=cortom,draw=corprimaria,line width=0.9pt] (base) {\textbf{Fundação} \quad \CamadaBase\\[1pt]{\scriptsize\color{corcinza}não conhece funcionalidades nem telas}};
+\node[camada,above=of base] (logica) {\textbf{Lógica pura} \quad \CamadaLogica\\[1pt]{\scriptsize\color{corcinza}regra de negócio testável sem rede, sem banco e sem interface}};
+\node[camada,above=of logica] (acesso) {\textbf{Acesso a dados} \quad \CamadaAcesso\\[1pt]{\scriptsize\color{corcinza}\QuemFalaComFora}};
+\node[camada,above=of acesso] (telas) {\textbf{Telas e interface} \quad \CamadaTelas\\[1pt]{\scriptsize\color{corcinza}apresentação, navegação e estado local}};
+\draw[setaforte] (logica.south) -- (base.north);
+\draw[setaforte] (acesso.south) -- (logica.north);
+\draw[setaforte] (telas.south) -- (acesso.north);
+\node[rotulo,anchor=west,text width=3.4cm,align=left] at ([xshift=0.45cm]telas.east) {mais volátil};
+\node[rotulo,anchor=west,text width=3.4cm,align=left] at ([xshift=0.45cm]base.east) {mais estável};
+\draw[seta,draw=corsuave] ([xshift=0.3cm]telas.south east) -- node[rotulo,right,text width=3.2cm,align=left,xshift=2pt] {a dependência só aponta para baixo} ([xshift=0.3cm]base.north east);
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage{relatorio}
+
+\newcommand{\NomeDoProduto}{App Exemplo}
+\newcommand{\NomeDoAutor}{Nome do Autor}
+\newcommand{\CargoDoAutor}{Engenharia de Software}
+\newcommand{\NomeDoDestinatario}{Diretoria e equipe técnica da Empresa Exemplo Ltda.}
+\newcommand{\DataBase}{1 de janeiro de 2027}
+
+\EmpresaRelatorio{Empresa Exemplo Ltda.}
+\MarcaRelatorio{Marca Exemplo}
+\IdentificacaoRodape{CNPJ 00.000.000/0001-00 \textperiodcentered\ Cidade, UF}
+\TituloRelatorio{Engenharia, Qualidade e Testes do \NomeDoProduto}
+\SubtituloRelatorio{Como o sistema foi construído e verificado: regras de codificação, métodos, catálogo de testes, resultados, avaliações de uso e inteligência artificial}
+\VolumeRelatorio{Volume II \textperiodcentered\ Engenharia e qualidade}
+\TituloCurto{\NomeDoProduto\ \textperiodcentered\ Engenharia, qualidade e testes}
+\VersaoRelatorio{Versão 1.0}
+\DataRelatorio{\DataBase}
+\AutorRelatorio{\NomeDoAutor}
+\CargoAutor{\CargoDoAutor}
+\DestinatarioRelatorio{\NomeDoDestinatario}
+\ClassificacaoRelatorio{Uso interno}
+\title{Engenharia, Qualidade e Testes do \NomeDoProduto}
+\author{\NomeDoAutor}
+
+\begin{document}
+\FazerCapa
+
+\input{capitulos/00-abertura}
+\tableofcontents
+
+\input{capitulos/01-visao-geral}
+
+\part{O produto por dentro}
+\input{capitulos/02-arquitetura}
+\input{capitulos/03-regras-de-codificacao}
+
+\part{Como o trabalho é feito}
+\input{capitulos/04-processo}
+\input{capitulos/05-ia-no-desenvolvimento}
+
+\part{Testes}
+\input{capitulos/06-estrategia-de-testes}
+\input{capitulos/07-catalogo-de-testes}
+\input{capitulos/08-plano-e-resultados}
+\input{capitulos/09-achados}
+
+\part{Experiência de uso}
+\input{capitulos/10-ux-e-design}
+\input{capitulos/11-gendermag}
+\input{capitulos/12-persona-de-dominio}
+
+\part{Inteligência artificial no produto}
+\input{capitulos/13-ia-no-produto}
+
+\part{Guia prático}
+\input{capitulos/14-como-fazer-um-bom-produto}
+
+\appendix
+\input{capitulos/anexo-testes}
+\input{capitulos/anexo-regras}
+\input{capitulos/anexo-scripts}
+\input{capitulos/anexo-glossario}
+
+\end{document}

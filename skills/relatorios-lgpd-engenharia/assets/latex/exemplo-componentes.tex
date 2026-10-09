@@ -1,0 +1,125 @@
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage{relatorio}
+\EmpresaRelatorio{Empresa Exemplo Ltda.}
+\MarcaRelatorio{Marca Exemplo}
+\IdentificacaoRodape{CNPJ 00.000.000/0001-00 \textperiodcentered\ Cidade, UF}
+\TituloRelatorio{Tratamento de Dados Pessoais no App Exemplo}
+\SubtituloRelatorio{Relatório técnico de mapeamento, evidências e pontos de atenção à luz da Lei Geral de Proteção de Dados}
+\VolumeRelatorio{Volume I \textperiodcentered\ Proteção de dados}
+\TituloCurto{App Exemplo \textperiodcentered\ Dados pessoais e LGPD}
+\VersaoRelatorio{Versão 1.0}
+\DataRelatorio{1 de janeiro de 2027}
+\AutorRelatorio{Nome do Autor}
+\CargoAutor{Engenharia de Software}
+\DestinatarioRelatorio{Diretoria da Empresa Exemplo Ltda. e consultoria jurídica por ela indicada}
+\ClassificacaoRelatorio{Confidencial}
+\title{Tratamento de Dados Pessoais no App Exemplo}
+\author{Nome do Autor}
+\begin{document}
+\FazerCapa
+\tableofcontents
+
+\chapter{Sumário executivo}\label{cap:sumario}
+\begin{destaquebox}
+Síntese do capítulo em três a cinco linhas: o que foi examinado, o que se encontrou e o que se pede ao leitor.
+\end{destaquebox}
+
+Este relatório descreve, com base em evidência extraída do código-fonte, do banco de dados e de testes executados, como o aplicativo trata dados pessoais. O texto distingue o que foi \destaque{verificado} do que depende de informação externa ao código\footnote{\lgpd{art.~37}: \enquote{O controlador e o operador devem manter registro das operações de tratamento de dados pessoais que realizarem, especialmente quando baseado no legítimo interesse.}}.
+
+\noindent
+\begin{minipage}{0.235\textwidth}\indicador{12}{tabelas com dado pessoal sob controle de acesso}\end{minipage}\hfill
+\begin{minipage}{0.235\textwidth}\indicador{48/50}{sondas de acesso indevido barradas}\end{minipage}\hfill
+\begin{minipage}{0.235\textwidth}\indicador{7}{terceiros que recebem dados}\end{minipage}\hfill
+\begin{minipage}{0.235\textwidth}\indicador{30 dias}{entre o pedido e a eliminação da conta}\end{minipage}
+
+\section{Como ler este documento}
+A gravidade é técnica: \gravidade{critica} \gravidade{alta} \gravidade{media} \gravidade{baixa} \gravidade{informativa}. A situação de cada tema aparece como \situacaotexto{atende}, \situacaotexto{parcial}, \situacaotexto{naoatende}, \situacaotexto{externo} ou \situacaotexto{na}.
+
+\begin{itemize}
+  \item A coluna \cod{accepted_at} guarda o instante do aceite; a gravação está em \arq{src/services/termos.ts:42}.
+  \item Um caminho longo quebra sem estourar a margem: \arq{db/migrations/20270101120000_politica_de_retencao_de_registros.sql:106}.
+  \begin{itemize}
+    \item Segundo nível de lista.
+  \end{itemize}
+\end{itemize}
+
+\begin{achado}{LGPD-01}{O aplicativo não apresenta aviso de privacidade ao titular}{alta}
+\campo{Fato apurado}
+Nenhuma tela do aplicativo nem a página pública de download informa finalidade, forma e duração do tratamento, identificação do controlador e direitos do titular. A busca por \cod{privacidade} em \arq{src/} não devolve resultado.
+\campo{Evidência}
+\arq{src/screens/Cadastro.tsx:1-120}; \arq{src/screens/Termo.tsx}.
+\campo{Dispositivos possivelmente relacionados (hipótese)}
+\lgpd{art.~6º, VI}; \lgpd{art.~9º}.
+\campo{Recomendação técnica}
+Publicar aviso de privacidade e exibi-lo antes do aceite, com registro da versão apresentada.
+\end{achado}
+
+\begin{pontoparecer}
+A qualificação da base legal aplicável ao tratamento dos documentos enviados no cadastro depende de interpretação do contrato firmado pelo usuário.
+\end{pontoparecer}
+
+\begin{nota}
+Os números de produção foram obtidos por consultas agregadas, sem leitura de registros individuais.
+\end{nota}
+
+\begin{atencao}
+O ambiente de homologação contém usuários sintéticos criados por teste de carga.
+\end{atencao}
+
+\begin{conforme}
+Toda tabela com dado de outro usuário é protegida por política de segurança no próprio banco.
+\end{conforme}
+
+\begin{licao}
+Refutar um achado antes de classificá-lo evitou conclusões erradas.
+\end{licao}
+
+\begin{pratica}
+Escreva o teste do ator não autorizado antes do caminho feliz.
+\end{pratica}
+
+\begin{pendente}
+Existência de contrato de operador com cada fornecedor listado no Quadro~\ref{qd:operadores}.
+\end{pendente}
+
+\begin{quesito}{Base legal para o tratamento de dados de terceiros}
+\campo{Fato que motiva a pergunta}
+O resumo exibido ao usuário pode conter informação de saúde de terceiros (\achadoref{LGPD-01}).
+\campo{Pergunta}
+O tratamento desses dados pela empresa encontra amparo no art.~11, II, da LGPD? Em qual alínea?
+\end{quesito}
+
+\begin{table}[H]
+\tabelapequena
+\caption{Operadores e localização do tratamento}\label{qd:operadores}
+\begin{tabularx}{\textwidth}{L{2.6cm}YL{2.4cm}C{2.2cm}}
+\toprule
+\linhacab \cab{Fornecedor} & \cab{Dados enviados} & \cab{Local} & \cab{Situação}\\
+\midrule
+Banco gerenciado & Cadastro, documentos e notificações & São Paulo (Brasil) & \situacao{atende}\\
+Analytics & Identificador, e-mail, telas visitadas & Estados Unidos & \situacao{parcial}\\
+Modelo de linguagem & Texto digitado no chat & Estados Unidos & \situacao{externo}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{codigo}
+select count(*) from public.profiles where deleted_at is not null
+\end{codigo}
+
+\section{Segunda seção}
+\subsection{Subseção}
+\subsubsection{Tópico}
+Texto de exemplo para conferir a hierarquia tipográfica e o espaçamento entre parágrafos, com um número em destaque: \numero{242 ms}.
+
+\part{Testes}
+\chapter{Fichas}
+Seta → maior ou igual ≥ e aproximadamente ≈ no texto.
+\begin{ficha}{S1}{Matriz de controle de acesso com ator não autorizado}{passou}
+\campo{Objetivo}
+Provar que um usuário não lê nem altera dado de outro.
+\campo{Resultado}
+48 de 50 sondas com o resultado esperado. \resultado{falhou} \resultado{parcial} \resultado{bloqueado} \resultado{naoexecutado}
+\end{ficha}
+\assinatura{Nome do Autor}{Engenharia de Software}
+\end{document}

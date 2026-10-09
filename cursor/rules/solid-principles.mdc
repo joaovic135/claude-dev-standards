@@ -1,0 +1,161 @@
+---
+description: Princípios SOLID aplicados a React Native — descrição e exemplos de código
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Princípios SOLID no React Native
+
+---
+
+## S — Single Responsibility Principle (Responsabilidade Única)
+
+> "Um componente ou função deve ter apenas uma razão para mudar."
+
+Separe lógica de negócio (hooks) da renderização (JSX). O componente decide **como** algo aparece; o hook decide **o quê** acontece.
+
+```tsx
+// ❌ ERRADO — componente faz tudo
+export function UserProfile() {
+  const [user, setUser] = useState(null);
+  useEffect(() => { fetch('/api/user').then(r => r.json()).then(setUser); }, []);
+  const fullName = `${user?.first} ${user?.last}`;
+  return <Text>{fullName}</Text>;
+}
+
+// ✅ CORRETO — hook cuida da lógica, componente cuida da UI
+function useUserProfile() {
+  const [user, setUser] = useState(null);
+  useEffect(() => { fetch('/api/user').then(r => r.json()).then(setUser); }, []);
+  return { fullName: `${user?.first ?? ''} ${user?.last ?? ''}` };
+}
+
+export function UserProfile() {
+  const { fullName } = useUserProfile();
+  return <Text>{fullName}</Text>;
+}
+```
+
+---
+
+## O — Open/Closed Principle (Aberto para Extensão, Fechado para Modificação)
+
+> "Componentes devem ser extensíveis sem precisar alterar seu código interno."
+
+Use composição com `children` em vez de acumular `if/switch` para novos casos de uso.
+
+```tsx
+// ❌ ERRADO — precisa modificar o Card para cada novo conteúdo
+export function Card({ title, description, showButton }: CardProps) {
+  return (
+    <View>
+      <Text>{title}</Text>
+      {description && <Text>{description}</Text>}
+      {showButton && <Button title="Ação" />}
+    </View>
+  );
+}
+
+// ✅ CORRETO — Card é extensível via children, nunca precisa ser modificado
+export function Card({ children }: { children: React.ReactNode }) {
+  return <View style={styles.card}>{children}</View>;
+}
+
+// Uso — o Card não mudou, mas agora suporta qualquer conteúdo
+<Card>
+  <Text>Título</Text>
+  <Image source={{ uri: expert.avatarUrl }} />
+  <Button title="Ver perfil" onPress={handlePress} />
+</Card>
+```
+
+---
+
+## L — Liskov Substitution Principle (Substituição de Liskov)
+
+> "Um componente customizado deve poder substituir o nativo sem quebrar nada."
+
+Componentes que envolvem elementos nativos devem estender e repassar todas as suas props (`...rest`).
+
+```tsx
+// ❌ ERRADO — CustomButton não aceita props nativas como disabled, testID, style
+interface BadButtonProps {
+  title: string;
+  onPress: () => void;
+}
+export function CustomButton({ title, onPress }: BadButtonProps) {
+  return <TouchableOpacity onPress={onPress}><Text>{title}</Text></TouchableOpacity>;
+}
+
+// ✅ CORRETO — estende TouchableOpacityProps para substituição perfeita
+import { TouchableOpacity, TouchableOpacityProps, Text } from 'react-native';
+
+interface ButtonProps extends TouchableOpacityProps {
+  title: string;
+}
+
+export function CustomButton({ title, ...rest }: ButtonProps) {
+  return (
+    <TouchableOpacity {...rest}>
+      <Text>{title}</Text>
+    </TouchableOpacity>
+  );
+}
+// Agora aceita: disabled, style, testID, accessibilityLabel, etc.
+```
+
+---
+
+## I — Interface Segregation Principle (Segregação de Interface)
+
+> "Um componente não deve ser forçado a depender de props que não usa."
+
+Passe apenas os dados que o componente precisa para renderizar — não objetos inteiros.
+
+```tsx
+// ❌ ERRADO — UserAvatar recebe o objeto inteiro mas só usa avatarUrl
+<UserAvatar user={user} />
+// Se a interface User mudar (novo campo, renomeação), UserAvatar pode quebrar
+
+// ✅ CORRETO — só o necessário
+<UserAvatar imageUrl={user.avatarUrl} size={40} />
+
+// Componente isolado e estável
+interface UserAvatarProps {
+  imageUrl: string;
+  size?: number;
+}
+export function UserAvatar({ imageUrl, size = 32 }: UserAvatarProps) {
+  return <Image source={{ uri: imageUrl }} style={{ width: size, height: size }} />;
+}
+```
+
+---
+
+## D — Dependency Inversion Principle (Inversão de Dependência)
+
+> "Dependa de abstrações, não de implementações concretas."
+
+Componentes visuais não devem importar SDKs externos diretamente. Consuma serviços via Contexto ou props (injeção de dependência).
+
+```tsx
+// ❌ ERRADO — componente acoplado ao Firebase Analytics
+import analytics from '@react-native-firebase/analytics';
+
+export function BuyButton() {
+  const handlePress = () => {
+    analytics().logEvent('purchase_intent'); // acoplamento direto
+  };
+  return <Button title="Comprar" onPress={handlePress} />;
+}
+
+// ✅ CORRETO — componente consome uma abstração via contexto
+import { useAnalytics } from '@/contexts/AnalyticsContext';
+
+export function BuyButton() {
+  const { trackEvent } = useAnalytics(); // abstração — não sabe qual SDK está por baixo
+  const handlePress = () => trackEvent('purchase_intent');
+  return <Button title="Comprar" onPress={handlePress} />;
+}
+// Trocar Firebase por Mixpanel = mudar só o Provider, zero toque nos componentes
+```

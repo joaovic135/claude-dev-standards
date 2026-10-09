@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage{relatorio}
+
+\newcommand{\NomeDoProduto}{App Exemplo}
+\newcommand{\NomeDoAutor}{Nome do Autor}
+\newcommand{\CargoDoAutor}{Engenharia de Software}
+\newcommand{\NomeDoDestinatario}{Diretoria da Empresa Exemplo Ltda. e consultoria jurídica por ela indicada}
+\newcommand{\DataBase}{1 de janeiro de 2027}
+
+\EmpresaRelatorio{Empresa Exemplo Ltda.}
+\MarcaRelatorio{Marca Exemplo}
+\IdentificacaoRodape{CNPJ 00.000.000/0001-00 \textperiodcentered\ Cidade, UF}
+\TituloRelatorio{Tratamento de Dados Pessoais no \NomeDoProduto}
+\SubtituloRelatorio{Relatório técnico de mapeamento, evidências e pontos de atenção à luz da Lei Geral de Proteção de Dados, para subsidiar consultoria jurídica}
+\VolumeRelatorio{Volume I \textperiodcentered\ Proteção de dados}
+\TituloCurto{\NomeDoProduto\ \textperiodcentered\ Dados pessoais e LGPD}
+\VersaoRelatorio{Versão 1.0}
+\DataRelatorio{\DataBase}
+\AutorRelatorio{\NomeDoAutor}
+\CargoAutor{\CargoDoAutor}
+\DestinatarioRelatorio{\NomeDoDestinatario}
+\ClassificacaoRelatorio{Confidencial}
+\title{Tratamento de Dados Pessoais no \NomeDoProduto}
+\author{\NomeDoAutor}
+
+\begin{document}
+\FazerCapa
+
+\input{capitulos/00-abertura}
+\tableofcontents
+
+\input{capitulos/01-sumario-executivo}
+\input{capitulos/02-objeto-e-metodo}
+\input{capitulos/03-o-sistema}
+\input{capitulos/04-inventario-de-dados}
+\input{capitulos/05-transparencia-e-bases}
+\input{capitulos/06-compartilhamento}
+\input{capitulos/07-direitos-e-ciclo-de-vida}
+\input{capitulos/08-dados-sensiveis-e-terceiros}
+\input{capitulos/09-inteligencia-artificial}
+\input{capitulos/10-seguranca}
+\input{capitulos/11-canais-publicos}
+\input{capitulos/12-registro-de-achados}
+\input{capitulos/13-quesitos}
+\input{capitulos/14-plano-de-adequacao}
+
+\appendix
+\input{capitulos/anexo-matriz}
+\input{capitulos/anexo-administracao}
+\input{capitulos/anexo-evidencias}
+\input{capitulos/anexo-glossario}
+\input{capitulos/anexo-normas}
+
+\end{document}

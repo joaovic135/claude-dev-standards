@@ -1,0 +1,54 @@
+# generated / vendored build output
+dist/
+build/
+out/
+coverage/
+
+# binaries / media
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+*.mp4
+*.mov
+*.pdf
+*.woff
+*.woff2
+
+# secrets / IDE
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# generated / vendored (JS/TS)
+node_modules/
+.pnp/
+.next/
+.expo/
+.turbo/
+*.tsbuildinfo
+
+# lockfiles (agent must not read, not edit)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# generated native projects (prebuild output)
+ios/
+android/
+
+# dumps de banco e sincronizacao local (podem conter PII de producao)
+dumps/
+.sync-temp/
+supabase/.temp/
+
+# snapshots do Playwright MCP
+.playwright-mcp/

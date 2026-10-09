@@ -1,0 +1,92 @@
+---
+description: Quando criar (ou não) um custom hook — árvore de decisão e princípios
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Regras para Custom Hooks
+
+**Princípio central:** o componente cuida do visual (UI); o hook cuida do comportamento (lógica).
+
+## Árvore de Decisão
+
+```
+A lógica usa useState, useEffect, useContext ou outros hooks do React?
+  │
+  ├── NÃO ──> Crie uma função helper simples em .ts (sem prefixo "use")
+  │
+  └── SIM
+       │
+       └── A lógica é complexa OU será usada em mais de um componente?
+                │
+                ├── NÃO ──> Deixe dentro do próprio componente por enquanto
+                │
+                └── SIM ──> Crie um Custom Hook (use*.ts)
+```
+
+## Quando Extrair para um Hook
+
+Mesmo que a lógica seja usada em um único componente, extraia para um hook se **qualquer** condição for verdadeira:
+
+- O componente está ficando difícil de ler por causa do volume de lógica.
+- A lógica será reutilizada em mais de um componente.
+- A lógica é complexa e mistura responsabilidades dentro do JSX.
+
+## Onde Colocar o Hook
+
+| Escopo | Local |
+|--------|-------|
+| Específico de uma rota | `src/features/<nome-da-rota>/hooks/useNomeDoHook.ts` |
+| Compartilhado entre rotas | `src/hooks/useNomeDoHook.ts` |
+
+**Colocation:** se o hook só é usado por uma rota, coloque-o em `src/features/<rota>/hooks/`. Se a rota for deletada, o hook vai junto — sem "código fantasma".
+
+## Exemplos
+
+### Função helper (sem hooks internos)
+
+```ts
+// src/features/pedidos/utils/formatValor.ts
+export function formatValor(valor: number | null): string {
+  if (valor == null) return 'A definir';
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+}
+```
+
+### Lógica simples — deixar no componente
+
+```tsx
+// aceitável dentro do componente quando é trivial
+const [isOpen, setIsOpen] = useState(false);
+const handleToggle = () => setIsOpen((prev) => !prev);
+```
+
+### Custom Hook — lógica complexa ou reutilizada
+
+```ts
+// src/features/pedidos/hooks/usePedidos.ts
+export function usePedidos() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Pedido[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!query) return;
+    setIsLoading(true);
+    searchPedidos(query).then((data) => {
+      setResults(data);
+      setIsLoading(false);
+    });
+  }, [query]);
+
+  return { query, setQuery, results, isLoading };
+}
+```
+
+```tsx
+// index.tsx — componente só cuida do visual
+export function PedidosScreen() {
+  const { query, setQuery, results, isLoading } = usePedidos();
+  return (/* JSX limpo */);
+}
+```

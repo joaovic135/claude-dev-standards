@@ -1,0 +1,312 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{relatorio}[2026/10/07 Estilo de relatorios tecnicos formais]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[brazilian]{babel}
+\RequirePackage[helvratio=0.9]{newpxtext}
+\RequirePackage{newpxmath}
+\RequirePackage[scaled=0.94]{inconsolata}
+\RequirePackage[final,tracking=true]{microtype}
+\RequirePackage[a4paper,top=2.9cm,bottom=3.0cm,left=3.0cm,right=2.6cm,headheight=15pt,headsep=0.9cm,footskip=1.25cm]{geometry}
+\RequirePackage[table]{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{multirow}
+\RequirePackage{makecell}
+\RequirePackage{enumitem}
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+\RequirePackage{lastpage}
+\RequirePackage{caption}
+\RequirePackage{float}
+\RequirePackage[autostyle]{csquotes}
+\RequirePackage[bottom,hang,flushmargin]{footmisc}
+\RequirePackage{fontawesome5}
+\RequirePackage{fancyvrb}
+\RequirePackage{tikz}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\RequirePackage{pdflscape}
+\RequirePackage{ragged2e}
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\RequirePackage{xurl}
+\RequirePackage[colorlinks=true,linkcolor=corprimariaescura,urlcolor=corprimariaescura,citecolor=corprimariaescura,pdfusetitle,bookmarksnumbered=true,unicode=true]{hyperref}
+\RequirePackage{bookmark}
+
+\definecolor{corprimaria}{HTML}{2C7A73}
+\definecolor{corprimariaescura}{HTML}{1F5C56}
+\definecolor{cortinta}{HTML}{17252D}
+\definecolor{corcinza}{HTML}{5C6870}
+\definecolor{corsuave}{HTML}{9AA5AC}
+\definecolor{cortom}{HTML}{EDF4F3}
+\definecolor{corpapel}{HTML}{F7F9F9}
+\definecolor{sevcritica}{HTML}{8E1B1B}
+\definecolor{sevalta}{HTML}{BF4E15}
+\definecolor{sevmedia}{HTML}{A8790A}
+\definecolor{sevbaixa}{HTML}{3A6B8A}
+\definecolor{sevinformativa}{HTML}{6B7280}
+\definecolor{sitatende}{HTML}{2E7D4F}
+\definecolor{sitparcial}{HTML}{A8790A}
+\definecolor{sitnaoatende}{HTML}{8E1B1B}
+\definecolor{sitexterno}{HTML}{3A6B8A}
+\definecolor{sitna}{HTML}{6B7280}
+
+\linespread{1.07}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.62em plus 0.15em minus 0.1em}
+\setlength{\emergencystretch}{2.5em}
+\clubpenalty=9000
+\widowpenalty=9000
+\displaywidowpenalty=9000
+\raggedbottom
+\urlstyle{tt}
+
+\newcommand{\rel@titulo}{}
+\newcommand{\rel@subtitulo}{}
+\newcommand{\rel@volume}{}
+\newcommand{\rel@titulocurto}{}
+\newcommand{\rel@versao}{}
+\newcommand{\rel@data}{}
+\newcommand{\rel@autor}{}
+\newcommand{\rel@cargo}{}
+\newcommand{\rel@destinatario}{}
+\newcommand{\rel@classificacao}{}
+\newcommand{\rel@empresa}{Razão Social da Empresa Ltda}
+\newcommand{\rel@marca}{Marca}
+\newcommand{\rel@identificacao}{}
+\newcommand{\TituloRelatorio}[1]{\renewcommand{\rel@titulo}{#1}}
+\newcommand{\SubtituloRelatorio}[1]{\renewcommand{\rel@subtitulo}{#1}}
+\newcommand{\VolumeRelatorio}[1]{\renewcommand{\rel@volume}{#1}}
+\newcommand{\TituloCurto}[1]{\renewcommand{\rel@titulocurto}{#1}}
+\newcommand{\VersaoRelatorio}[1]{\renewcommand{\rel@versao}{#1}}
+\newcommand{\DataRelatorio}[1]{\renewcommand{\rel@data}{#1}}
+\newcommand{\AutorRelatorio}[1]{\renewcommand{\rel@autor}{#1}}
+\newcommand{\CargoAutor}[1]{\renewcommand{\rel@cargo}{#1}}
+\newcommand{\DestinatarioRelatorio}[1]{\renewcommand{\rel@destinatario}{#1}}
+\newcommand{\ClassificacaoRelatorio}[1]{\renewcommand{\rel@classificacao}{#1}}
+\newcommand{\EmpresaRelatorio}[1]{\renewcommand{\rel@empresa}{#1}}
+\newcommand{\MarcaRelatorio}[1]{\renewcommand{\rel@marca}{#1}}
+\newcommand{\IdentificacaoRodape}[1]{\renewcommand{\rel@identificacao}{#1}}
+
+\newcommand{\versalete}[1]{{\sffamily\textls[90]{\MakeUppercase{#1}}}}
+
+\newcommand{\FazerCapa}{%
+  \begin{titlepage}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[corprimaria] (current page.north west) rectangle ([xshift=2.35cm]current page.south west);
+    \fill[corprimariaescura] ([xshift=2.35cm]current page.north west) rectangle ([xshift=2.5cm]current page.south west);
+    \node[rotate=90,anchor=west,text=white,font=\sffamily\small] at ([xshift=1.28cm,yshift=2.6cm]current page.south west) {\textls[220]{\MakeUppercase{\rel@marca}}};
+    \node[anchor=north west,text=corcinza,font=\sffamily\small,align=left] at ([xshift=4.0cm,yshift=-2.7cm]current page.north west) {\textls[160]{\MakeUppercase{\rel@marca}}\\[2pt]{\footnotesize\color{corsuave}\rel@empresa}};
+    \node[anchor=north east,text=corprimaria,font=\sffamily\small\bfseries,align=right] at ([xshift=-2.6cm,yshift=-2.7cm]current page.north east) {\textls[160]{\MakeUppercase{\rel@volume}}};
+    \node[anchor=west,text width=13.6cm,align=left] at ([xshift=4.0cm,yshift=3.0cm]current page.west) {%
+      {\color{corprimaria}\rule{2.4cm}{2.2pt}}\par\vspace{16pt}
+      {\fontsize{28}{34}\selectfont\bfseries\color{cortinta}\RaggedRight\hyphenpenalty=10000\exhyphenpenalty=10000 \rel@titulo\par}
+      \vspace{14pt}
+      {\fontsize{14}{19.5}\selectfont\itshape\color{corcinza}\RaggedRight\hyphenpenalty=10000 \rel@subtitulo\par}};
+    \node[anchor=south west,text width=13.6cm,align=left] at ([xshift=4.0cm,yshift=3.1cm]current page.south west) {%
+      \renewcommand{\arraystretch}{1.35}%
+      \begin{tabular}{@{}>{\sffamily\scriptsize\color{corcinza}}p{3.1cm}@{\hspace{0.4cm}}>{\small\color{cortinta}\RaggedRight\hyphenpenalty=10000\arraybackslash}p{9.6cm}@{}}
+        \textls[110]{DESTINATÁRIO} & \rel@destinatario\\
+        \textls[110]{ELABORAÇÃO} & \rel@autor\ifx\rel@cargo\@empty\else, \rel@cargo\fi\\
+        \textls[110]{VERSÃO E DATA} & \rel@versao\ \textperiodcentered\ \rel@data\\
+        \textls[110]{CLASSIFICAÇÃO} & \rel@classificacao\\
+      \end{tabular}};
+    \draw[corsuave,line width=0.4pt] ([xshift=4.0cm,yshift=2.75cm]current page.south west) -- ([xshift=-2.6cm,yshift=2.75cm]current page.south east);
+    \node[anchor=north west,text=corsuave,font=\sffamily\scriptsize] at ([xshift=4.0cm,yshift=2.55cm]current page.south west) {\rel@empresa\ifx\rel@identificacao\@empty\else\ \textperiodcentered\ \rel@identificacao\fi};
+  \end{tikzpicture}
+  \end{titlepage}
+  \setcounter{page}{2}%
+}
+
+\fancypagestyle{estilorelatorio}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0.4pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \renewcommand{\headrule}{{\color{corsuave}\hrule width\headwidth height\headrulewidth}}%
+  \fancyhead[L]{\sffamily\scriptsize\color{corcinza}\textls[90]{\MakeUppercase{\rel@titulocurto}}}%
+  \fancyhead[R]{\sffamily\scriptsize\color{corprimaria}\textls[90]{\MakeUppercase{\rel@classificacao}}}%
+  \fancyfoot[L]{\sffamily\scriptsize\color{corsuave}\rel@empresa\ \textperiodcentered\ \rel@marca\ \textperiodcentered\ \rel@versao}%
+  \fancyfoot[R]{\sffamily\scriptsize\color{corcinza}\thepage\ de \pageref*{LastPage}}%
+}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[L]{\sffamily\scriptsize\color{corsuave}\rel@empresa\ \textperiodcentered\ \rel@marca\ \textperiodcentered\ \rel@versao}%
+  \fancyfoot[R]{\sffamily\scriptsize\color{corcinza}\thepage\ de \pageref*{LastPage}}%
+}
+\pagestyle{estilorelatorio}
+
+\titleformat{\chapter}[display]
+  {\normalfont\color{cortinta}}
+  {\sffamily\small\bfseries\color{corprimaria}\textls[160]{\MakeUppercase{\chaptertitlename}\ \thechapter}}
+  {6pt}
+  {\fontsize{24}{29}\selectfont\bfseries}
+  [\vspace{8pt}{\color{corprimaria}\titlerule[1.4pt]}]
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\color{cortinta}}
+  {}
+  {0pt}
+  {\fontsize{24}{29}\selectfont\bfseries}
+  [\vspace{8pt}{\color{corprimaria}\titlerule[1.4pt]}]
+\titlespacing*{\chapter}{0pt}{-14pt}{20pt}
+\titleformat{\section}{\normalfont\Large\bfseries\color{cortinta}}{\color{corprimaria}\thesection}{0.75em}{}
+\titlespacing*{\section}{0pt}{1.5em plus 0.4em minus 0.2em}{0.45em}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{cortinta}}{\color{corprimaria}\thesubsection}{0.7em}{}
+\titlespacing*{\subsection}{0pt}{1.15em plus 0.3em minus 0.2em}{0.3em}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries\itshape\color{cortinta}}{}{0em}{}
+\titlespacing*{\subsubsection}{0pt}{0.9em plus 0.2em minus 0.1em}{0.15em}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
+\addto\captionsbrazilian{%
+  \renewcommand{\appendixname}{Anexo}%
+  \renewcommand{\contentsname}{Sumário}%
+  \renewcommand{\listtablename}{Lista de quadros}%
+  \renewcommand{\tablename}{Quadro}%
+  \renewcommand{\figurename}{Figura}%
+}
+
+\captionsetup{font={small,sf},labelfont={bf,color=corprimaria},labelsep=endash,justification=raggedright,singlelinecheck=false,skip=6pt}
+\setlist{leftmargin=1.5em,itemsep=0.25em,topsep=0.2em,parsep=0.15em}
+\setlist[itemize,1]{label={\color{corprimaria}\raisebox{0.15ex}{\scriptsize\faIcon{square}}}}
+\setlist[itemize,2]{label={\color{corsuave}\textendash}}
+\setlist[enumerate,1]{label={\color{corprimaria}\bfseries\arabic*.}}
+\setlist[enumerate,2]{label={\color{corprimaria}(\alph*)}}
+\renewcommand{\footnoterule}{\vspace*{-3pt}{\color{corsuave}\hrule width 4.2cm height 0.4pt}\vspace*{2.6pt}}
+\setlength{\footnotemargin}{1.1em}
+\renewcommand{\arraystretch}{1.28}
+\setlength{\tabcolsep}{5pt}
+\setlength{\LTpre}{0.8em}
+\setlength{\LTpost}{0.8em}
+
+\newcolumntype{L}[1]{>{\RaggedRight\hyphenpenalty=4000\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{C}[1]{>{\Centering\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\RaggedLeft\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{Y}{>{\RaggedRight\hyphenpenalty=4000\arraybackslash\hspace{0pt}}X}
+\newcommand{\cab}[1]{{\sffamily\bfseries\footnotesize\color{cortinta}#1}}
+\newcommand{\linhacab}{\rowcolor{cortom}}
+\newcommand{\tabelapequena}{\small\renewcommand{\arraystretch}{1.3}}
+\newcommand{\tabelaminima}{\footnotesize\renewcommand{\arraystretch}{1.28}}
+
+\newcommand{\arq}[1]{{\small\ttfamily\color{corprimariaescura}\nolinkurl{#1}}}
+\newcommand{\cod}[1]{{\small\ttfamily\nolinkurl{#1}}}
+\newcommand{\lgpd}[1]{LGPD, #1}
+\newcommand{\termo}[1]{\textit{#1}}
+\newcommand{\destaque}[1]{{\bfseries\color{corprimariaescura}#1}}
+\newcommand{\numero}[1]{{\sffamily\bfseries\color{corprimariaescura}#1}}
+\newcommand{\achadoref}[1]{{\sffamily\bfseries\small\color{corprimariaescura}#1}}
+
+\newtcbox{\rel@selo}[1]{on line,arc=1.6pt,outer arc=1.6pt,colback=#1,colframe=#1,boxrule=0pt,boxsep=0pt,left=4pt,right=4pt,top=1.6pt,bottom=1.6pt,fontupper=\sffamily\bfseries\fontsize{6.6}{7.6}\selectfont\color{white}}
+\newcommand{\gravidade}[1]{\rel@selo{sev#1}{\textls[60]{\MakeUppercase{\csname rel@rot@#1\endcsname}}}}
+\@namedef{rel@rot@critica}{Crítica}
+\@namedef{rel@rot@alta}{Alta}
+\@namedef{rel@rot@media}{Média}
+\@namedef{rel@rot@baixa}{Baixa}
+\@namedef{rel@rot@informativa}{Informativa}
+\newcommand{\selo}[2]{\rel@selo{#1}{\textls[60]{\MakeUppercase{#2}}}}
+
+\newcommand{\situacao}[1]{\csname rel@sit@#1\endcsname}
+\@namedef{rel@sit@atende}{{\color{sitatende}\faIcon{check-circle}}}
+\@namedef{rel@sit@parcial}{{\color{sitparcial}\faIcon{adjust}}}
+\@namedef{rel@sit@naoatende}{{\color{sitnaoatende}\faIcon{times-circle}}}
+\@namedef{rel@sit@externo}{{\color{sitexterno}\faIcon{question-circle}}}
+\@namedef{rel@sit@na}{{\color{sitna}\faIcon{minus-circle}}}
+\newcommand{\situacaotexto}[1]{\situacao{#1}\,{\sffamily\footnotesize\csname rel@sittxt@#1\endcsname}}
+\@namedef{rel@sittxt@atende}{Atende}
+\@namedef{rel@sittxt@parcial}{Atende em parte}
+\@namedef{rel@sittxt@naoatende}{Não atende}
+\@namedef{rel@sittxt@externo}{Depende de informação externa}
+\@namedef{rel@sittxt@na}{Não se aplica}
+
+\newcommand{\campo}[1]{\par\vspace{0.55em}\noindent{\sffamily\bfseries\fontsize{7.2}{9}\selectfont\color{corcinza}\textls[80]{\MakeUppercase{#1}}}\par\vspace{0.12em}\noindent\ignorespaces}
+
+\newtcolorbox{achado}[3]{%
+  enhanced,breakable,colback=white,colframe=corsuave!55,boxrule=0.45pt,arc=1.2pt,outer arc=1.2pt,
+  borderline west={3.2pt}{0pt}{sev#3},
+  left=13pt,right=10pt,top=8pt,bottom=8pt,before skip=12pt,after skip=12pt,
+  before upper={{\sffamily\bfseries\small\color{sev#3}#1}\hfill\gravidade{#3}\par\vspace{0.2em}{\large\bfseries\color{cortinta}#2}\par\vspace{-0.15em}},
+  parbox=false}
+
+\newcounter{quesito}
+\newtcolorbox{quesito}[1]{%
+  enhanced,breakable,colback=corpapel,colframe=corprimaria,boxrule=0pt,toprule=1.1pt,bottomrule=0.4pt,arc=0pt,outer arc=0pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,before skip=12pt,after skip=12pt,
+  before upper={\refstepcounter{quesito}{\sffamily\bfseries\small\color{corprimaria}\textls[90]{QUESITO \thequesito}}\par\vspace{0.15em}{\large\bfseries\color{cortinta}#1}\par\vspace{-0.15em}},
+  parbox=false}
+
+\newtcolorbox{rel@chamada}[3]{%
+  enhanced,breakable,colback=#2!6,colframe=#2,boxrule=0pt,leftrule=2.6pt,arc=0pt,outer arc=0pt,
+  left=11pt,right=10pt,top=7pt,bottom=7pt,before skip=11pt,after skip=11pt,
+  before upper={{\sffamily\bfseries\small\color{#2!85!black}#3\enspace #1}\par\vspace{0.1em}},
+  parbox=false}
+\newenvironment{pontoparecer}[1][Ponto para parecer jurídico]{\begin{rel@chamada}{#1}{corprimaria}{\faIcon{balance-scale}}}{\end{rel@chamada}}
+\newenvironment{nota}[1][Nota]{\begin{rel@chamada}{#1}{sevbaixa}{\faIcon{info-circle}}}{\end{rel@chamada}}
+\newenvironment{atencao}[1][Atenção]{\begin{rel@chamada}{#1}{sevalta}{\faIcon{exclamation-triangle}}}{\end{rel@chamada}}
+\newenvironment{conforme}[1][Conformidade demonstrada]{\begin{rel@chamada}{#1}{sitatende}{\faIcon{check-circle}}}{\end{rel@chamada}}
+\newenvironment{licao}[1][Lição aprendida]{\begin{rel@chamada}{#1}{sevmedia}{\faIcon{lightbulb}}}{\end{rel@chamada}}
+\newenvironment{pratica}[1][Como aplicar]{\begin{rel@chamada}{#1}{corprimaria}{\faIcon{tools}}}{\end{rel@chamada}}
+\newenvironment{pendente}[1][Informação a confirmar pela administração]{\begin{rel@chamada}{#1}{corcinza}{\faIcon{user-edit}}}{\end{rel@chamada}}
+
+\newtcolorbox{destaquebox}[1][]{enhanced,colback=cortom,colframe=cortom,boxrule=0pt,arc=2pt,left=12pt,right=12pt,top=10pt,bottom=10pt,before skip=12pt,after skip=12pt,parbox=false,#1}
+
+\newcommand{\indicador}[2]{%
+  \begin{tcolorbox}[enhanced,colback=white,colframe=corsuave!55,boxrule=0.45pt,arc=1.5pt,left=6pt,right=6pt,top=7pt,bottom=6pt,halign=center,valign=center,height=2.25cm,nobeforeafter]
+    {\fontsize{19}{22}\selectfont\sffamily\bfseries\color{corprimaria}#1}\par\vspace{2pt}{\sffamily\fontsize{7.4}{9}\selectfont\color{corcinza}#2}
+  \end{tcolorbox}}
+
+\DefineVerbatimEnvironment{codigo}{Verbatim}{fontsize=\footnotesize,frame=leftline,framerule=1.6pt,rulecolor=\color{corprimaria!55},xleftmargin=10pt,framesep=9pt,baselinestretch=1.0}
+
+\newcommand{\assinatura}[2]{%
+  \par\vspace{2.2cm}\noindent\begin{minipage}{7.5cm}\raggedright{\color{corcinza}\rule{7.5cm}{0.4pt}}\\[3pt]{\bfseries #1}\\{\small\color{corcinza}#2}\end{minipage}}
+
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+\DeclareUnicodeCharacter{2190}{\ensuremath{\leftarrow}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{2713}{\ensuremath{\checkmark}}
+\DeclareUnicodeCharacter{2011}{-}
+\DeclareUnicodeCharacter{202F}{\,}
+\DeclareUnicodeCharacter{2009}{\,}
+\DeclareUnicodeCharacter{200B}{}
+
+\titleformat{\part}[display]
+  {\normalfont\color{cortinta}\raggedright}
+  {\vspace*{5.2cm}\sffamily\bfseries\color{corprimaria}\textls[200]{\MakeUppercase{\partname}\ \thepart}}
+  {14pt}
+  {\fontsize{30}{36}\selectfont\bfseries}
+  [\vspace{14pt}{\color{corprimaria}\rule{3cm}{2.2pt}}]
+
+\definecolor{respassou}{HTML}{2E7D4F}
+\definecolor{resfalhou}{HTML}{8E1B1B}
+\definecolor{resparcial}{HTML}{A8790A}
+\definecolor{resbloqueado}{HTML}{3A6B8A}
+\definecolor{resnaoexecutado}{HTML}{6B7280}
+\newcommand{\resultado}[1]{\rel@selo{res#1}{\textls[60]{\MakeUppercase{\csname rel@res@#1\endcsname}}}}
+\@namedef{rel@res@passou}{Passou}
+\@namedef{rel@res@falhou}{Falhou}
+\@namedef{rel@res@parcial}{Parcial}
+\@namedef{rel@res@bloqueado}{Bloqueado}
+\@namedef{rel@res@naoexecutado}{Não executado}
+
+\newtcolorbox{ficha}[3]{%
+  enhanced,breakable,colback=white,colframe=corsuave!55,boxrule=0.45pt,arc=1.2pt,outer arc=1.2pt,
+  borderline west={3.2pt}{0pt}{res#3},
+  left=13pt,right=10pt,top=7pt,bottom=7pt,before skip=10pt,after skip=10pt,
+  before upper={{\sffamily\bfseries\small\color{res#3}#1}\hfill\resultado{#3}\par\vspace{0.15em}{\bfseries\color{cortinta}#2}\par\vspace{-0.2em}},
+  parbox=false}
+
+\newcommand{\tela}[3][0.30\textwidth]{%
+  \begin{minipage}[t]{#1}\centering
+    {\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.5pt}\fcolorbox{corsuave}{white}{\includegraphics[width=\dimexpr\linewidth-1pt\relax]{#2}}}\par\vspace{4pt}
+    {\sffamily\fontsize{7.6}{9.4}\selectfont\color{corcinza}#3\par}
+  \end{minipage}}
+
+\AtBeginDocument{%
+  \hypersetup{pdfsubject={\rel@subtitulo},pdfcreator={LaTeX},pdfkeywords={\rel@marca}}%
+}
+\endinput
