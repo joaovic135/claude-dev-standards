@@ -1,0 +1,85 @@
+name: Wiki
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag da release publicada (ex.: v1.10.0)"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag da release (ex.: v1.10.0). A anterior é inferida pela ordem das tags."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    name: Atualizar wiki (${{ inputs.tag }})
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - name: Checkout da tag (histórico completo)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout do wiki
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: .wiki
+          token: ${{ secrets.WIKI_TOKEN || github.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Contexto da release
+        run: node scripts/wiki/contexto.mjs "$TAG" "$RUNNER_TEMP/wiki" --wiki .wiki --prompt .github/wiki/prompt.md
+
+      - name: Histórico de versões
+        run: node scripts/wiki/historico.mjs .wiki
+
+      - name: Atualizar páginas com o Claude Code
+        if: env.ANTHROPIC_API_KEY != ''
+        run: |
+          npm install -g @anthropic-ai/claude-code@2.1.306
+          claude -p "$(cat "$RUNNER_TEMP/wiki/prompt.txt")" \
+            --permission-mode acceptEdits \
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git log *),Bash(git show *),Bash(git diff *),Bash(node scripts/wiki/verificar-links.mjs *),Bash(npm run wiki:links)" \
+            --max-turns 120 \
+            --output-format text
+
+      - name: Sem chave do Claude
+        if: env.ANTHROPIC_API_KEY == ''
+        run: echo "::warning::ANTHROPIC_API_KEY não está nos secrets; só o Histórico de versões foi atualizado."
+
+      - name: Conferir links e estrutura
+        run: node scripts/wiki/verificar-links.mjs .wiki
+
+      - name: Publicar no wiki
+        working-directory: .wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki sem mudanças para $TAG"
+            exit 0
+          fi
+          git commit -m "docs: wiki da versão $TAG"
+          git push

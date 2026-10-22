@@ -2,8 +2,9 @@
 
 Kit de padrões para desenvolver com o Claude Code (e com o Cursor) em qualquer projeto: o contrato
 do projeto (`CLAUDE.md`), agentes especializados, hooks e permissões, regras de código impostas por
-lint, estratégia de testes, versionamento e release, servidores MCP, comunicação entre agentes de
-projetos diferentes e uma skill de relatórios de proteção de dados e engenharia.
+lint, estratégia de testes, versionamento e release, fluxo de tarefa com GitHub Projects, wiki
+atualizado pelo CI a cada release, servidores MCP, comunicação entre agentes de projetos diferentes
+e uma skill de relatórios de proteção de dados e engenharia.
 
 Nasceu de um app Expo (iOS, Android e web) com Supabase e integração com um sistema externo,
 construído por um desenvolvedor com o Claude Code como par permanente. Tudo aqui foi anonimizado:
@@ -31,13 +32,17 @@ Para o Cursor, copie `cursor/rules/*.mdc` para `.cursor/rules/` do projeto.
 | `claude/agents/`                                               | 12 agentes: desenho, revisão, banco, segurança, testes, UX, aparelho, contexto, plano de testes        |
 | `claude/settings.json`, `claude/hooks/`, `claude/claudeignore` | Hook de formatação pós-edição, lista de negação de leitura, ignore de busca                            |
 | `claude/memoria.md`                                            | Convenção da memória persistente do agente                                                             |
+| `claude/skills/fluxo-de-tarefa/`                               | Skill de projeto que abre e conduz cada tarefa: issue, branch ligada, worktree, PR em rascunho, card   |
 | `rules/codigo.md`                                              | Invariantes, fronteiras, convenções e como registrar um padrão novo                                    |
 | `rules/decisoes-de-arquitetura.md`                             | Escada "onde uma capacidade mora", critérios de corte e decisões com trade-off                         |
 | `rules/testes.md`                                              | Quando escrever teste, níveis, plano executável por agente                                             |
 | `rules/release.md`                                             | Conventional Commits, `semantic-release`, portão único, CI, supply chain, lições                       |
+| `rules/fluxo-de-trabalho.md`                                   | Tutorial do fluxo de tarefa com GitHub Projects: quadro, ciclo, campos, Action, tokens, armadilhas     |
+| `rules/wiki-automatica.md`                                     | Tutorial do wiki do GitHub atualizado pelo Claude Code no CI a cada release                            |
+| `rules/ci/`                                                    | Modelos de CI: `semantic-release`, pré-commit, Action do quadro, workflow e prompt do wiki             |
 | `rules/mobile.md`                                              | Armadilhas de Expo / React Native que já custaram uma sessão                                           |
 | `rules/eslint/`                                                | Regras de lint que impõem tokens de design, fronteiras entre features e shims de SDK                   |
-| `scripts/`                                                     | Gate de auditoria com allowlist, prévia de release na PR, geração segura de tipos, versão única        |
+| `scripts/`                                                     | Gate de auditoria, prévia de release, tipos, versão única, branch ligada à issue e contexto do wiki    |
 | `cursor/rules/`                                                | Regras `.mdc` para o Cursor: clean code, SOLID, hooks, estrutura de rotas e o resumo do contrato       |
 | `mcp/`                                                         | Servidores MCP recomendados, lições de setup e o `papo` para agentes de projetos diferentes            |
 | `skills/`                                                      | A skill `relatorios-lgpd-engenharia`, como pasta e como pacote `.skill`                                |

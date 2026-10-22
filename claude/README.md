@@ -1,13 +1,14 @@
 # Configuração do Claude Code
 
-| Arquivo                  | Destino no projeto      | O que faz                                                                                       |
-| ------------------------ | ----------------------- | ----------------------------------------------------------------------------------------------- |
-| `CLAUDE.template.md`     | `CLAUDE.md`             | Contrato do projeto com nove seções; preencha os placeholders e apague o que não se aplica      |
-| `agents/*.md`            | `.claude/agents/`       | Doze agentes com papel, ferramentas mínimas, modelo e a negativa "não use para X"               |
-| `settings.json`          | `.claude/settings.json` | Hook `PostToolUse` de formatação e `permissions.deny` para lockfiles, saídas de build e `.env*` |
-| `hooks/format-edited.sh` | `.claude/hooks/`        | Formata o arquivo recém-editado com o formatador do projeto; silencioso por contrato            |
-| `claudeignore`           | `.claudeignore`         | O que a busca do agente não vê: gerado, vendorado, binários                                     |
-| `memoria.md`             | (leitura)               | Convenção da memória persistente: tipos, formato, o que vale guardar                            |
+| Arquivo                   | Destino no projeto                | O que faz                                                                                                                                                                                           |
+| ------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLAUDE.template.md`      | `CLAUDE.md`                       | Contrato do projeto com nove seções; preencha os placeholders e apague o que não se aplica                                                                                                          |
+| `agents/*.md`             | `.claude/agents/`                 | Doze agentes com papel, ferramentas mínimas, modelo e a negativa "não use para X"                                                                                                                   |
+| `settings.json`           | `.claude/settings.json`           | Hook `PostToolUse` de formatação e `permissions.deny` para lockfiles, saídas de build e `.env*`                                                                                                     |
+| `hooks/format-edited.sh`  | `.claude/hooks/`                  | Formata o arquivo recém-editado com o formatador do projeto; silencioso por contrato                                                                                                                |
+| `claudeignore`            | `.claudeignore`                   | O que a busca do agente não vê: gerado, vendorado, binários                                                                                                                                         |
+| `memoria.md`              | (leitura)                         | Convenção da memória persistente: tipos, formato, o que vale guardar                                                                                                                                |
+| `skills/fluxo-de-tarefa/` | `.claude/skills/fluxo-de-tarefa/` | Skill de projeto do fluxo de tarefa com GitHub Projects; troque os placeholders `<org>`, `<repo>`, `<número do quadro>`, `<nome do quadro>` e `<produto>`. Tutorial em `rules/fluxo-de-trabalho.md` |
 
 ## Os agentes
 

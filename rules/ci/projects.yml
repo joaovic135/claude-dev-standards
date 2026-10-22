@@ -1,0 +1,190 @@
+name: Projects
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, edited, closed]
+    branches: [stage, main]
+
+concurrency:
+  group: projects-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  mover-cards:
+    name: Mover cards do quadro
+    runs-on: ubuntu-latest
+    env:
+      TEM_TOKEN: ${{ secrets.PROJECTS_TOKEN != '' }}
+    steps:
+      - name: Sem token de projects
+        if: env.TEM_TOKEN != 'true'
+        run: echo "::warning::Secret PROJECTS_TOKEN ausente; os cards do quadro não foram movidos. Ver docs/fluxo-de-trabalho.md."
+
+      - name: Mover cards
+        if: env.TEM_TOKEN == 'true'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        env:
+          ORGANIZACAO: "<org>"
+          NUMERO_DO_QUADRO: "<número do quadro>"
+          BRANCH_DE_HOMOLOGACAO: stage
+          BRANCH_PRINCIPAL: main
+          COLUNA_BACKLOG: Backlog
+          COLUNA_FAZENDO: Fazendo
+          COLUNA_EM_TESTE: Em teste
+          COLUNA_CONCLUIDO: Concluído
+        with:
+          github-token: ${{ secrets.PROJECTS_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const evento = context.payload.action;
+            const base = pr.base.ref;
+            const corpo = pr.body || '';
+            const homologacao = process.env.BRANCH_DE_HOMOLOGACAO;
+            const principal = process.env.BRANCH_PRINCIPAL;
+            const coluna = {
+              backlog: process.env.COLUNA_BACKLOG,
+              fazendo: process.env.COLUNA_FAZENDO,
+              emTeste: process.env.COLUNA_EM_TESTE,
+              concluido: process.env.COLUNA_CONCLUIDO,
+            };
+            const citadas = [
+              ...corpo.matchAll(/^\s*issue\s*:\s*#(\d+)/gim),
+              ...corpo.matchAll(/\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*:?\s+#(\d+)/gi),
+            ].map((m) => Number(m[1]));
+
+            const numeroDoQuadro = Number(process.env.NUMERO_DO_QUADRO);
+            const { organization } = await github.graphql(
+              `query($org: String!, $numero: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $numero) {
+                    id
+                    field(name: "Status") { ... on ProjectV2SingleSelectField { id options { id name } } }
+                  }
+                }
+              }`,
+              { org: process.env.ORGANIZACAO, numero: numeroDoQuadro }
+            );
+            const quadro = organization.projectV2;
+            const opcao = (nome) => {
+              const encontrada = quadro.field.options.find((o) => o.name === nome);
+              if (!encontrada) throw new Error(`coluna "${nome}" não existe no campo Status do quadro`);
+              return encontrada.id;
+            };
+
+            const doQuadro = (item) => {
+              const card = item.projectItems.nodes.find((n) => n.project.number === numeroDoQuadro);
+              return card ? { id: card.id, status: card.status, content: { number: item.number, state: item.state, ehIssue: item.ehIssue !== false } } : null;
+            };
+            const camposDoItem = `projectItems(first: 10) { nodes { id project { number } status: fieldValueByName(name: "Status") { ... on ProjectV2ItemFieldSingleSelectValue { name } } } }`;
+
+            const daPr = [];
+            for (const numero of citadas) {
+              const { repository } = await github.graphql(
+                `query($dono: String!, $repo: String!, $numero: Int!) {
+                  repository(owner: $dono, name: $repo) { issue(number: $numero) { number state ${camposDoItem} } }
+                }`,
+                { dono: context.repo.owner, repo: context.repo.repo, numero }
+              );
+              const item = repository.issue && doQuadro(repository.issue);
+              if (item) daPr.push(item);
+            }
+
+            const doProprioPr = await (async () => {
+              const { repository } = await github.graphql(
+                `query($dono: String!, $repo: String!, $numero: Int!) {
+                  repository(owner: $dono, name: $repo) { pullRequest(number: $numero) { number state ${camposDoItem} } }
+                }`,
+                { dono: context.repo.owner, repo: context.repo.repo, numero: pr.number }
+              );
+              return repository.pullRequest && doQuadro({ ...repository.pullRequest, ehIssue: false });
+            })();
+            const daTarefa = doProprioPr ? [...daPr, doProprioPr] : daPr;
+
+            const prsEmTeste = async () => {
+              const { repository } = await github.graphql(
+                `query($dono: String!, $repo: String!, $base: String!) {
+                  repository(owner: $dono, name: $repo) {
+                    pullRequests(last: 100, states: MERGED, baseRefName: $base) { nodes { number state ${camposDoItem} } }
+                  }
+                }`,
+                { dono: context.repo.owner, repo: context.repo.repo, base: homologacao }
+              );
+              return repository.pullRequests.nodes
+                .map((p) => doQuadro({ ...p, ehIssue: false }))
+                .filter((item) => item && item.status && item.status.name === coluna.emTeste);
+            };
+
+            const issuesEmTeste = async () => {
+              const encontrados = [];
+              let depois = null;
+              do {
+                const { repository } = await github.graphql(
+                  `query($dono: String!, $repo: String!, $depois: String) {
+                    repository(owner: $dono, name: $repo) {
+                      issues(first: 100, after: $depois, states: OPEN) {
+                        pageInfo { hasNextPage endCursor }
+                        nodes { number state ${camposDoItem} }
+                      }
+                    }
+                  }`,
+                  { dono: context.repo.owner, repo: context.repo.repo, depois }
+                );
+                for (const issue of repository.issues.nodes) {
+                  const item = doQuadro(issue);
+                  if (item && item.status && item.status.name === coluna.emTeste) encontrados.push(item);
+                }
+                depois = repository.issues.pageInfo.hasNextPage ? repository.issues.pageInfo.endCursor : null;
+              } while (depois);
+              return encontrados;
+            };
+
+            const mover = (item, nome) =>
+              github.graphql(
+                `mutation($quadro: ID!, $item: ID!, $campo: ID!, $opcao: String!) {
+                  updateProjectV2ItemFieldValue(input: { projectId: $quadro, itemId: $item, fieldId: $campo, value: { singleSelectOptionId: $opcao } }) {
+                    projectV2Item { id }
+                  }
+                }`,
+                { quadro: quadro.id, item: item.id, campo: quadro.field.id, opcao: opcao(nome) }
+              );
+
+            if (evento !== 'closed') {
+              for (const item of daTarefa.filter((i) => !i.status || i.status.name === coluna.backlog)) {
+                await mover(item, coluna.fazendo);
+                core.info(`#${item.content.number} → ${coluna.fazendo}`);
+              }
+              return;
+            }
+
+            if (!pr.merged) return;
+
+            if (base === homologacao) {
+              for (const item of daTarefa) {
+                await mover(item, coluna.emTeste);
+                core.info(`#${item.content.number} → ${coluna.emTeste}`);
+              }
+              const cabeca = pr.head.ref;
+              if (pr.head.repo.full_name === `${context.repo.owner}/${context.repo.repo}` && ![principal, homologacao].includes(cabeca)) {
+                try {
+                  await github.rest.git.deleteRef({ owner: context.repo.owner, repo: context.repo.repo, ref: `heads/${cabeca}` });
+                  core.info(`branch ${cabeca} apagada`);
+                } catch (erro) {
+                  core.warning(`não apaguei a branch ${cabeca}: ${erro.message}`);
+                }
+              }
+              return;
+            }
+
+            if (base !== principal) return;
+
+            const concluir = new Map([...daTarefa, ...(await issuesEmTeste()), ...(await prsEmTeste())].map((i) => [i.id, i]));
+            for (const item of concluir.values()) {
+              await mover(item, coluna.concluido);
+              if (item.content.ehIssue && item.content.state === 'OPEN') {
+                await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: item.content.number, state: 'closed', state_reason: 'completed' });
+              }
+              core.info(`#${item.content.number} → ${coluna.concluido}`);
+            }

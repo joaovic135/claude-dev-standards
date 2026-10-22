@@ -1,5 +1,8 @@
 # Skills
 
+As skills desta pasta são pessoais (instaladas em `~/.claude/skills/`). Skill de projeto, que vai
+para `.claude/skills/` do repositório, fica em `claude/skills/`: hoje, `fluxo-de-tarefa`.
+
 ## relatorios-lgpd-engenharia
 
 Produz, a partir do código-fonte, do banco e das páginas públicas de um sistema, dois relatórios
